@@ -1,0 +1,2084 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+eslint.config.js
+index.html
+package.json
+postcss.config.js
+public/vite.svg
+README.md
+src/AdminPage.jsx
+src/App.css
+src/App.jsx
+src/assets/bgkita.jpg
+src/assets/react.svg
+src/CartView.jsx
+src/components/CartItemRow.jsx
+src/components/LoginModal.jsx
+src/components/MenuCard.jsx
+src/dataMenu.js
+src/index.css
+src/LandingPage.jsx
+src/main.jsx
+src/MenuPage.jsx
+src/OrderSuccess.jsx
+src/TrackOrder.jsx
+tailwind.config.js
+vite.config.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="eslint.config.js">
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{js,jsx}'],
+    extends: [
+      js.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+])
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>warung-fix</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="package.json">
+{
+  "name": "warung-fix",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-hot-toast": "^2.6.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.22",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.1",
+    "vite": "^7.2.4"
+  }
+}
+</file>
+
+<file path="postcss.config.js">
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+</file>
+
+<file path="public/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
+</file>
+
+<file path="README.md">
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+</file>
+
+<file path="src/AdminPage.jsx">
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast'; 
+
+const API_URL = 'http://localhost:5000';
+
+// --- FUNGSI HELPER BARU: MENGAMBIL TOKEN DAN HEADER ---
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+        toast.error("Sesi berakhir, silakan login ulang.");
+        return {}; 
+    }
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+    };
+};
+// --------------------------------------------------------
+
+const AdminPage = ({ onLogout, adminName }) => {
+  const [activeMenu, setActiveMenu] = useState('dashboard'); // <-- DEFAULT: Dashboard
+  const [menuItems, setMenuItems] = useState([]);
+  const [orders, setOrders] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  
+  // STATE BARU UNTUK DASHBOARD
+  const [salesData, setSalesData] = useState(null); 
+  const [loadingSales, setLoadingSales] = useState(false);
+
+  // STATE MODAL TAMBAH MENU
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newItem, setNewItem] = useState({
+    name: '', category: 'Makanan', price: '', description: '', image: null
+  });
+
+  // --- 1. LOAD DATA UTAMA (Menu & Orders) ---
+  const fetchData = async () => {
+    setLoading(true);
+    const authHeaders = getAuthHeaders(); 
+
+    try {
+      const menuRes = await fetch(`${API_URL}/api/menu`);
+      const menuData = await menuRes.json();
+      setMenuItems(menuData);
+
+      const orderRes = await fetch(`${API_URL}/api/orders`, {
+          headers: { 'Authorization': authHeaders.Authorization } 
+      });
+      if (orderRes.status === 401 || orderRes.status === 403) {
+          toast.error("Akses Ditolak. Silakan login kembali.");
+          onLogout(); 
+          return;
+      }
+      const orderData = await orderRes.json();
+      setOrders(orderData);
+      
+      setLoading(false); 
+    } catch (error) {
+      console.error("Gagal ambil data:", error);
+      toast.error("Gagal mengambil data server");
+      setLoading(false);
+    }
+  };
+
+  // --- 2. LOAD DATA SALES DASHBOARD (BARU) ---
+  const fetchSalesData = async () => {
+      setLoadingSales(true);
+      const authHeaders = getAuthHeaders();
+      if (!authHeaders.Authorization) {
+          setLoadingSales(false);
+          return;
+      }
+      try {
+          // Panggil endpoint baru
+          const response = await fetch(`${API_URL}/api/dashboard/sales`, {
+              headers: { 'Authorization': authHeaders.Authorization }
+          });
+
+          if (response.status === 401 || response.status === 403) {
+              toast.error("Akses Dashboard Ditolak. Silakan login kembali.");
+              onLogout(); 
+              return;
+          }
+          const data = await response.json();
+          setSalesData(data);
+      } catch (error) {
+          console.error("Gagal ambil data sales:", error);
+          toast.error("Gagal mengambil data penjualan.");
+      } finally {
+          setLoadingSales(false);
+      }
+  };
+
+  useEffect(() => { 
+      fetchData(); 
+      fetchSalesData(); // Ambil data sales saat komponen pertama kali dimuat
+  }, []);
+
+  // --- LOGIKA TAMBAH MENU (POST) ---
+  const handleAddItem = async (e) => {
+    e.preventDefault();
+    const loadingToast = toast.loading('Sedang mengupload menu...');
+    const token = localStorage.getItem('userToken'); 
+    
+    const formData = new FormData();
+    formData.append('name', newItem.name);
+    formData.append('category', newItem.category);
+    formData.append('price', newItem.price);
+    formData.append('description', newItem.description);
+    if (newItem.image) formData.append('image', newItem.image);
+
+    try {
+        const response = await fetch(`${API_URL}/api/menu`, { 
+            method: 'POST', 
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData 
+        });
+        
+        toast.dismiss(loadingToast);
+        
+        if (response.status === 401 || response.status === 403) {
+            toast.error("Akses Ditolak. Silakan login kembali.");
+            onLogout(); 
+            return;
+        }
+
+        if (response.ok) {
+            toast.success("Menu berhasil ditambahkan!"); 
+            setShowAddModal(false);
+            setNewItem({ name: '', category: 'Makanan', price: '', description: '', image: null });
+            fetchData();
+        } else {
+            toast.error("Gagal menambah menu"); 
+        }
+    } catch (error) { 
+        toast.dismiss(loadingToast);
+        toast.error("Error koneksi ke server"); 
+    }
+  };
+
+  // --- LOGIKA UPDATE & DELETE MENU ---
+  const toggleAvailability = async (item) => {
+    const authHeaders = getAuthHeaders(); 
+    if (!authHeaders.Authorization) return; 
+
+    try {
+      const updatedStatus = !item.is_available;
+      const response = await fetch(`${API_URL}/api/menu/${item.id}`, {
+        method: 'PUT',
+        headers: authHeaders, 
+        body: JSON.stringify({ ...item, is_available: updatedStatus })
+      });
+      
+      if (response.status === 401 || response.status === 403) {
+          toast.error("Akses Ditolak. Silakan login kembali.");
+          onLogout(); 
+          return;
+      }
+      
+      if (response.ok) {
+        setMenuItems(menuItems.map(m => m.id === item.id ? { ...m, is_available: updatedStatus } : m));
+        toast.success(`Status ${item.name} diperbarui!`);
+      }
+    } catch (error) { toast.error("Gagal update status"); }
+  };
+
+  const handleDeleteMenu = async (id) => {
+    const authHeaders = getAuthHeaders(); 
+    if (!authHeaders.Authorization) return; 
+
+    if (window.confirm("Hapus menu ini?")) {
+      const loadingToast = toast.loading('Menghapus...');
+      try {
+        const response = await fetch(`${API_URL}/api/menu/${id}`, { 
+            method: 'DELETE',
+            headers: authHeaders 
+        });
+        
+        toast.dismiss(loadingToast);
+        
+        if (response.status === 401 || response.status === 403) {
+            toast.error("Akses Ditolak. Silakan login kembali.");
+            onLogout(); 
+            return;
+        }
+
+        if (response.ok) {
+            setMenuItems(menuItems.filter(item => item.id !== id));
+            toast.success("Menu berhasil dihapus");
+        } else {
+            toast.error("Gagal menghapus menu");
+        }
+
+
+      } catch (error) { 
+        toast.dismiss(loadingToast);
+        toast.error("Gagal menghapus menu"); 
+      }
+    }
+  };
+
+  // --- LOGIKA UPDATE STATUS ORDER ---
+  const updateOrderStatus = async (id, newStatus) => {
+    const loadingToast = toast.loading('Mengupdate status...');
+    const authHeaders = getAuthHeaders(); 
+    if (!authHeaders.Authorization) {
+        toast.dismiss(loadingToast);
+        return; 
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/orders/${id}`, {
+            method: 'PUT',
+            headers: authHeaders,
+            body: JSON.stringify({ status: newStatus })
+        });
+        
+        toast.dismiss(loadingToast);
+        
+        if (response.status === 401 || response.status === 403) {
+            toast.error("Akses Ditolak. Silakan login kembali.");
+            onLogout(); 
+            return;
+        }
+
+        if (response.ok) {
+            setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+            toast.success(`Status pesanan jadi: ${newStatus}`);
+            // Jika order selesai, refresh data sales
+            if (newStatus === 'Selesai') {
+                fetchSalesData(); 
+            }
+        }
+    } catch (error) { 
+        toast.dismiss(loadingToast);
+        toast.error("Gagal update status pesanan"); 
+    }
+  };
+
+
+  // --- KOMPONEN TAMPILAN DASHBOARD (BARU) ---
+  const DashboardView = () => {
+    if (loadingSales) {
+        return <div className="text-center p-10">Memuat Data Penjualan...</div>;
+    }
+    if (!salesData) {
+        return <div className="text-center p-10 text-red-500">Gagal memuat data penjualan.</div>;
+    }
+
+    // Fungsi helper untuk memformat Rupiah
+    const formatRupiah = (number) => {
+        return `Rp ${parseFloat(number).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+    };
+
+    return (
+        <div className="animate-fade-in space-y-8">
+            <h3 className="text-xl font-bold text-gray-800">Ringkasan Penjualan</h3>
+
+            {/* Kotak Statistik Utama */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                {/* Total Revenue */}
+                <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-warung-btn2">
+                    <p className="text-sm font-medium text-gray-500">Total Pendapatan (Selesai)</p>
+                    <h4 className="text-3xl font-extrabold text-warung-btn2 mt-1">
+                        {formatRupiah(salesData.total_sales)}
+                    </h4>
+                </div>
+
+                {/* Total Orders */}
+                <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-warung-navbar">
+                    <p className="text-sm font-medium text-gray-500">Pesanan Selesai</p>
+                    <h4 className="text-3xl font-extrabold text-warung-navbar mt-1">
+                        {salesData.total_completed_orders}
+                    </h4>
+                </div>
+
+                {/* Total Menu Aktif */}
+                 <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
+                    <p className="text-sm font-medium text-gray-500">Menu Tersedia</p>
+                    <h4 className="text-3xl font-extrabold text-yellow-600 mt-1">
+                        {menuItems.filter(m => m.is_available).length}
+                    </h4>
+                </div>
+            </div>
+            
+            {/* Grafik Sederhana (7 Hari Terakhir) */}
+            <div className="bg-white p-6 rounded-xl shadow-md">
+                <h4 className="font-bold text-gray-800 mb-4">Pendapatan 7 Hari Terakhir (Selesai)</h4>
+                <div className="grid grid-cols-7 gap-1 h-40 items-end border-b border-l pb-1 text-xs">
+                    
+                    {salesData.daily_data.map((data, index) => (
+                        <div key={index} className="flex flex-col items-center justify-end h-full relative" title={`${data.date}: ${formatRupiah(data.revenue)}`}>
+                            {/* Bar */}
+                            <div 
+                                className="w-4 bg-warung-btn1/70 hover:bg-warung-btn1 transition-all rounded-t-sm" 
+                                style={{ height: `${(parseFloat(data.revenue) / (salesData.total_sales || 1)) * 100 * (salesData.daily_data.length > 0 ? 1.5 : 0.5)}%` }} // Scaling the height
+                            ></div>
+                            {/* Label Tanggal */}
+                            <span className="mt-1 text-gray-500 text-[10px] whitespace-nowrap">
+                                {new Date(data.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                            </span>
+                        </div>
+                    ))}
+                    
+                    {salesData.daily_data.length === 0 && <p className='col-span-7 text-center text-gray-400'>Belum ada data penjualan dalam 7 hari terakhir.</p>}
+                </div>
+            </div>
+
+        </div>
+    );
+  };
+
+
+  return (
+    <div className="flex h-screen bg-gray-100 font-sans animate-fade-in">
+      {/* SIDEBAR */}
+      <aside className="w-64 bg-warung-navbar text-white shadow-xl flex flex-col">
+        <div className="p-6 text-center border-b border-white/10">
+            <h1 className="font-bold text-2xl tracking-widest leading-none">WARUNGKU</h1>
+            <span className="text-xs opacity-70 tracking-wider">ADMIN PANEL</span>
+        </div>
+        <nav className="flex-1 py-6 space-y-2 px-4">
+            {/* TOMBOL DASHBOARD BARU */}
+            <button onClick={() => setActiveMenu('dashboard')} className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition ${activeMenu === 'dashboard' ? 'bg-warung-btn1 shadow-md font-bold' : 'hover:bg-white/10'}`}><span>📊</span> Dashboard Sales</button>
+            {/* --- */}
+            <button onClick={() => setActiveMenu('orders')} className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition ${activeMenu === 'orders' ? 'bg-warung-btn1 shadow-md font-bold' : 'hover:bg-white/10'}`}><span>📋</span> Pesanan Masuk</button>
+            <button onClick={() => setActiveMenu('menu')} className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition ${activeMenu === 'menu' ? 'bg-warung-btn1 shadow-md font-bold' : 'hover:bg-white/10'}`}><span>🍔</span> Manajemen Menu</button>
+        </nav>
+        <div className="p-4 border-t border-white/10">
+            <button onClick={onLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-red-600/80 bg-red-600 text-white transition font-bold">🚪 Keluar</button>
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT */}
+      <main className="flex-1 overflow-y-auto p-8">
+        <header className="flex justify-between items-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-800">
+                {activeMenu === 'dashboard' ? 'Dashboard Penjualan' : 
+                 activeMenu === 'orders' ? 'Daftar Pesanan' : 'Manajemen Menu'}
+            </h2>
+            <div className="font-bold text-gray-600">Halo, {adminName || 'Admin'}</div>
+        </header>
+        
+        {/* TAMPILKAN DASHBOARD */}
+        {activeMenu === 'dashboard' && <DashboardView />}
+
+
+        {/* TAMPILKAN MENU / ORDERS */}
+        {(activeMenu === 'orders' || activeMenu === 'menu') && (
+            loading && menuItems.length === 0 ? <div className="text-center p-10">Loading...</div> : (
+              <>
+                {/* --- BAGIAN PESANAN MASUK --- */}
+                {activeMenu === 'orders' && (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
+                    <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                        <h3 className="text-xl font-bold text-gray-800">Pesanan Masuk</h3>
+                        <button onClick={fetchData} className="text-sm text-blue-600 hover:underline">🔄 Refresh Data</button>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-warung-kolom text-gray-600">
+                                <tr>
+                                    <th className="p-4 font-bold">Kode</th>
+                                    <th className="p-4 font-bold">Tanggal</th>
+                                    <th className="p-4 font-bold">Pelanggan</th>
+                                    <th className="p-4 font-bold w-1/4">Menu Dipesan</th>
+                                    <th className="p-4 font-bold">Total</th>
+                                    <th className="p-4 font-bold">Status</th>
+                                    <th className="p-4 font-bold text-center">Aksi Cepat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {orders.map((order) => (
+                                    <tr key={order.id} className="border-b border-gray-50 hover:bg-gray-50">
+                                        <td className="p-4 font-bold text-warung-btn1 text-sm">{order.transaction_code}</td>
+                                        <td className="p-4 text-sm text-gray-700">
+                                            <div className="font-bold">{new Date(order.created_at).toLocaleDateString('id-ID')}</div>
+                                            <div className="text-xs text-gray-500">{new Date(order.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})} WIB</div>
+                                        </td>
+                                        <td className="p-4">
+                                            <div className="font-bold text-gray-800">{order.customer_name}</div>
+                                        </td>
+                                        <td className="p-4 text-sm text-gray-700 font-medium bg-yellow-50/50">{order.menu_items}</td>
+                                        <td className="p-4 font-bold">Rp {parseInt(order.total_price).toLocaleString('id-ID')}</td>
+                                        <td className="p-4">
+                                            <select value={order.status} onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                                className={`px-3 py-1 rounded-lg text-xs font-bold border cursor-pointer focus:outline-none ${
+                                                    order.status === 'Selesai' ? 'bg-green-100 text-green-700 border-green-200' :
+                                                    order.status === 'Sedang Dimasak' ? 'bg-orange-100 text-orange-700 border-orange-200' :
+                                                    order.status === 'Dibatalkan' ? 'bg-red-100 text-red-700 border-red-200' :
+                                                    'bg-yellow-100 text-yellow-800 border-yellow-200'
+                                                }`}
+                                            >
+                                                <option value="Menunggu Konfirmasi">⏳ Menunggu</option>
+                                                <option value="Sedang Dimasak">🔥 Dimasak</option>
+                                                <option value="Selesai">✅ Selesai</option>
+                                                <option value="Dibatalkan">❌ Batal</option>
+                                            </select>
+                                        </td>
+                                        <td className="p-4 flex justify-center gap-2">
+                                            {order.status === 'Menunggu Konfirmasi' && <button onClick={() => updateOrderStatus(order.id, 'Sedang Dimasak')} className="bg-orange-500 text-white p-2 rounded-lg text-xs hover:bg-orange-600 shadow">🔥 Masak</button>}
+                                            {order.status === 'Sedang Dimasak' && <button onClick={() => updateOrderStatus(order.id, 'Selesai')} className="bg-green-500 text-white p-2 rounded-lg text-xs hover:bg-green-600 shadow">✅ Beres</button>}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* --- BAGIAN MANAJEMEN MENU --- */}
+                {activeMenu === 'menu' && (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in relative">
+                    <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                        <h3 className="text-xl font-bold text-gray-800">Daftar Menu Makanan</h3>
+                        <button onClick={() => setShowAddModal(true)} className="bg-warung-btn1 text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-red-700 transition flex items-center gap-2">
+                            <span>+</span> Tambah Menu
+                        </button>
+                    </div>
+                    
+                    {/* MODAL TAMBAH MENU */}
+                    {showAddModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+                            <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md animate-fade-in">
+                                <h3 className="text-lg font-bold mb-4">Tambah Menu Baru</h3>
+                                <form onSubmit={handleAddItem} className="space-y-4">
+                                    <input type="text" placeholder="Nama Makanan" required className="w-full border p-2 rounded" 
+                                        value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} />
+                                    
+                                    <div className="flex gap-2">
+                                        <select className="border p-2 rounded flex-1" value={newItem.category} onChange={e => setNewItem({...newItem, category: e.target.value})}>
+                                            <option>Makanan</option><option>Minuman</option><option>Cemilan</option>
+                                        </select>
+                                        <input type="number" placeholder="Harga" required className="border p-2 rounded flex-1"
+                                            value={newItem.price} onChange={e => setNewItem({...newItem, price: e.target.value})} />
+                                    </div>
+                                    
+                                    <textarea placeholder="Deskripsi Singkat" className="w-full border p-2 rounded"
+                                        value={newItem.description} onChange={e => setNewItem({...newItem, description: e.target.value})}></textarea>
+                                    
+                                    <div>
+                                        <label className="block text-sm text-gray-600 mb-1">Upload Gambar</label>
+                                        <input type="file" accept="image/*" onChange={e => setNewItem({...newItem, image: e.target.files[0]})} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-warung-btn1 file:text-white hover:file:bg-red-700"/>
+                                    </div>
+
+                                    <div className="flex gap-2 pt-2">
+                                        <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Batal</button>
+                                        <button type="submit" className="flex-1 py-2 bg-warung-btn1 text-white rounded-lg font-bold hover:bg-red-700">Simpan</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-warung-kolom text-gray-600">
+                                <tr>
+                                    <th className="p-4 font-bold">Menu</th>
+                                    <th className="p-4 font-bold">Harga</th>
+                                    <th className="p-4 font-bold">Status</th>
+                                    <th className="p-4 font-bold text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {menuItems.map((item) => (
+                                    <tr key={item.id} className="border-b border-gray-50 hover:bg-gray-50">
+                                        <td className="p-4 flex items-center gap-3">
+                                            <img 
+                                                src={item.image_url?.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`} 
+                                                alt={item.name} 
+                                                className="w-12 h-12 object-cover rounded-lg shadow-sm" 
+                                            />
+                                            <div><div className="font-bold text-gray-800">{item.name}</div><div className="text-xs text-gray-500">{item.category}</div></div>
+                                        </td>
+                                        <td className="p-4 font-bold text-warung-btn1">Rp {parseInt(item.price).toLocaleString('id-ID')}</td>
+                                        <td className="p-4">
+                                            <button onClick={() => toggleAvailability(item)} className={`px-3 py-1 rounded-full text-xs font-bold transition shadow-sm border ${item.is_available ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-200 text-gray-500 border-gray-300'}`}>
+                                                {item.is_available ? '✅ Tersedia' : '⛔ Habis'}
+                                            </button>
+                                        </td>
+                                        <td className="p-4 flex justify-center"><button onClick={() => handleDeleteMenu(item.id)} className="text-red-600 hover:bg-red-50 p-2 rounded">🗑️</button></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                  </div>
+                )}
+              </>
+            )
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default AdminPage;
+</file>
+
+<file path="src/App.css">
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+</file>
+
+<file path="src/App.jsx">
+import React, { useState, useEffect } from 'react';
+// 1. IMPORT LIBRARY INI
+import { Toaster, toast } from 'react-hot-toast'; 
+
+import LandingPage from './LandingPage';
+import MenuPage from './MenuPage';
+import AdminPage from './AdminPage';
+
+function App() {
+  const [userRole, setUserRole] = useState(() => {
+    return localStorage.getItem('userRole') || 'guest';
+  });
+
+  const [userData, setUserData] = useState(() => {
+    const savedData = localStorage.getItem('userData');
+    return savedData ? JSON.parse(savedData) : null;
+  });
+
+  const handleLogin = async (email, password) => {
+    const loadingToast = toast.loading('Sedang masuk...');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+      
+      toast.dismiss(loadingToast);
+
+      if (response.ok) {
+        localStorage.setItem('userToken', data.token); 
+        localStorage.setItem('userRole', data.user.role);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+        setUserRole(data.user.role);
+        setUserData(data.user);
+
+        toast.success(`Selamat datang, ${data.user.name}!`); 
+      } else {
+        toast.error(data.message || 'Login gagal'); 
+      }
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      console.error("Login Error:", error);
+      toast.error("Gagal terhubung ke server");
+    }
+  };
+
+  const handleRegister = async (name, email, password, phone) => {
+    const loadingToast = toast.loading('Mendaftarkan akun...');
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, phone })
+      });
+
+      const data = await response.json();
+      toast.dismiss(loadingToast);
+
+      if (response.ok) {
+        toast.success("Registrasi Berhasil! Silakan Login.");
+        return true; 
+      } else {
+        toast.error(data.message || 'Registrasi gagal');
+        return false;
+      }
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      console.error("Register Error:", error);
+      toast.error("Gagal terhubung ke server");
+      return false;
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userData');
+    localStorage.removeItem('userToken'); 
+    setUserRole('guest');
+    setUserData(null);
+    toast.success("Berhasil keluar");
+  };
+
+  return (
+    <>
+      <Toaster 
+        position="bottom-right" 
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#333',
+            color: '#fff',
+          },
+        }}
+      />
+
+      {userRole === 'admin' ? (
+        <AdminPage onLogout={handleLogout} adminName={userData?.name} />
+      ) : userRole === 'user' ? (
+        <MenuPage 
+            onLogout={handleLogout} 
+            userName={userData?.name} 
+            userEmail={userData?.email} // <-- PERUBAHAN: Kirim email user
+        />
+      ) : (
+        <LandingPage onLoginAttempt={handleLogin} onRegisterAttempt={handleRegister} />
+      )}
+    </>
+  );
+}
+
+export default App;
+</file>
+
+<file path="src/assets/react.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+</file>
+
+<file path="src/CartView.jsx">
+import React, { useState, useEffect } from 'react'; // <-- TAMBAHKAN useEffect
+import CartItemRow from './components/CartItemRow';
+import { toast } from 'react-hot-toast'; // <-- BARU: Import toast
+
+const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, onConfirmOrder }) => {
+  // 1. STATE UNTUK FORM DATA
+  const [formData, setFormData] = useState({
+    name: '',
+    whatsapp: '',
+    address: '',
+    notes: '' // Opsional
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false); // Untuk loading button
+  
+  // --- BARU: LOGIKA AUTO-FILL DARI USER DATA ---
+  useEffect(() => {
+    const storedData = localStorage.getItem('userData');
+    if (storedData) {
+      try {
+        const userData = JSON.parse(storedData);
+        // Otomatis isi Nama dan WhatsApp
+        setFormData(prevData => ({
+          ...prevData,
+          name: userData.name || '',
+          // Kita asumsikan ada field phone_number di userData (atau ganti jika nama fieldnya beda)
+          whatsapp: userData.phone_number || '', 
+        }));
+      } catch (e) {
+        console.error("Error parsing userData from localStorage", e);
+      }
+    }
+  }, []);
+  // ---------------------------------------------
+
+
+  // Handle perubahan input ketikan user
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // 2. FUNGSI KIRIM KE BACKEND (POST)
+  const handleSubmit = async () => {
+    // Validasi Sederhana
+    if (!formData.name || !formData.whatsapp || !formData.address) {
+      toast.error("Mohon lengkapi Nama, WhatsApp, dan Alamat!"); // <-- GANTI ALERT JADI TOAST
+      return;
+    }
+
+    setIsSubmitting(true); // Nyalakan loading
+
+    try {
+      // Ambil ID user dari localStorage
+      const storedData = localStorage.getItem('userData');
+      const userData = storedData ? JSON.parse(storedData) : null;
+      const userId = userData ? userData.id : null; 
+
+      // Siapkan data sesuai format Backend (orderController.js)
+      const payload = {
+        user_id: userId, // KIRIM ID USER DISINI
+        customer_name: formData.name,
+        customer_whatsapp: formData.whatsapp,
+        customer_address: formData.address,
+        total_price: totalPrice,
+        cart_items: cart.map(item => ({
+            id: item.id,      // ID Produk
+            qty: item.qty,    // Jumlah
+            price: item.price // Harga saat beli
+        }))
+      };
+
+      // Tembak API
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // SUKSES!
+        onConfirmOrder(result.transaction_code); 
+      } else {
+        // ERROR DARI BACKEND
+        toast.error("Gagal memesan: " + result.error); // <-- GANTI ALERT JADI TOAST
+      }
+
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Terjadi kesalahan koneksi ke server."); // <-- GANTI ALERT JADI TOAST
+    } finally {
+      setIsSubmitting(false); // Matikan loading
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-warung-bg font-sans pb-10 animate-fade-in">
+      
+      {/* NAVBAR */}
+      <nav className="bg-warung-navbar px-6 py-4 flex justify-between items-center shadow-warung sticky top-0 z-50">
+        <div className="bg-white px-3 py-1 rounded shadow-sm">
+           <h1 className="text-warung-navbar font-bold text-xl tracking-widest leading-none">WARUNGKU</h1>
+        </div>
+        <div className="flex items-center gap-2 text-green-500 font-bold bg-black bg-opacity-20 px-3 py-1 rounded-full cursor-pointer hover:bg-opacity-30 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span className="text-sm md:text-base">Pengguna</span>
+        </div>
+      </nav>
+
+      {/* SUB-HEADER */}
+      <div className="bg-warung-shadow-color px-6 py-6 shadow-md">
+        <div className="max-w-7xl mx-auto">
+            <button onClick={onBack} className="flex items-center gap-2 text-warung-navbar bg-white/30 px-4 py-2 rounded-full text-sm font-bold mb-4 hover:bg-white/50 w-fit transition group">
+                <span className="group-hover:-translate-x-1 transition">←</span> Kembali ke Menu
+            </button>
+            <h2 className="text-3xl font-bold text-gray-900 leading-tight pl-1 mb-1">Satu Langkah Lagi</h2>
+            <p className="text-warung-navbar/80 pl-1 font-medium">Lengkapi data pesanan Anda</p>
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 flex flex-col lg:flex-row gap-8 items-start">
+        
+        {/* KIRI: RINGKASAN PESANAN */}
+        <div className="flex-1 w-full lg:max-w-2xl lg:sticky lg:top-28">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 pl-1">Ringkasan Pesanan</h3>
+            <div className="bg-warung-kolom p-6 rounded-2xl shadow-sm border border-warung-shadow-color/20">
+                <div className="space-y-2">
+                    {cart.map(item => (
+                        <CartItemRow 
+                            key={item.id} 
+                            item={item} 
+                            onIncrease={onIncrease} 
+                            onDecrease={onDecrease} 
+                            onRemove={onRemove}
+                        />
+                    ))}
+                </div>
+                <div className="mt-6 bg-warung-shadow-color p-6 rounded-xl flex justify-between items-center text-white shadow-inner">
+                    <span className="text-lg font-bold opacity-90">Total Harga</span>
+                    <span className="text-3xl font-bold text-warung-orange drop-shadow-sm">
+                        Rp {totalPrice.toLocaleString('id-ID')}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {/* KANAN: FORM INPUT */}
+        <div className="flex-1 w-full lg:max-w-xl">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 pl-1">Data Pemesanan</h3>
+            
+            <form className="bg-warung-kolom p-6 rounded-2xl shadow-sm border border-warung-shadow-color/20 space-y-5">
+                <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2 pl-1">Nama Lengkap</label>
+                    <input 
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        type="text" 
+                        placeholder="Masukkan Nama Anda" 
+                        className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 focus:border-warung-btn1 focus:ring-2 focus:ring-warung-btn1/30 focus:outline-none transition shadow-sm font-medium" 
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2 pl-1">Nomor WhatsApp (Aktif)</label>
+                    <input 
+                        name="whatsapp"
+                        value={formData.whatsapp}
+                        onChange={handleChange}
+                        type="tel" 
+                        placeholder="Contoh: 08123456789" 
+                        className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 focus:border-warung-btn1 focus:ring-2 focus:ring-warung-btn1/30 focus:outline-none transition shadow-sm font-medium" 
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2 pl-1">Alamat Lengkap</label>
+                    <textarea 
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        rows="4" 
+                        placeholder="Contoh: Jl. Merdeka No. 10, Pagar Hitam..." 
+                        className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 focus:border-warung-btn1 focus:ring-2 focus:ring-warung-btn1/30 focus:outline-none transition shadow-sm resize-none font-medium"
+                    ></textarea>
+                </div>
+                 <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2 pl-1 flex justify-between">
+                        Catatan Pesanan 
+                        <span className="text-gray-400 font-normal text-xs">(Opsional)</span>
+                    </label>
+                    <input 
+                        name="notes"
+                        value={formData.notes}
+                        onChange={handleChange}
+                        type="text" 
+                        placeholder="Contoh: Jangan terlalu pedas" 
+                        className="w-full px-4 py-3 rounded-lg bg-white border border-gray-200 focus:border-warung-btn1 focus:ring-2 focus:ring-warung-btn1/30 focus:outline-none transition shadow-sm font-medium" 
+                    />
+                </div>
+
+                <button 
+                    type="button" 
+                    onClick={handleSubmit} 
+                    disabled={isSubmitting} // Disable kalau lagi loading
+                    className={`w-full text-white font-bold py-4 rounded-xl shadow-md transition transform text-lg mt-8 flex justify-center items-center gap-2 ${
+                        isSubmitting 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-warung-btn1 hover:bg-red-700 hover:scale-[1.01] active:scale-[0.99]'
+                    }`}
+                >
+                    {isSubmitting ? (
+                        <>Sedang Memproses...</>
+                    ) : (
+                        <>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                            Konfirmasi Pesanan
+                        </>
+                    )}
+                </button>
+            </form>
+        </div>
+
+      </main>
+    </div>
+  );
+};
+
+export default CartView;
+</file>
+
+<file path="src/components/CartItemRow.jsx">
+import React from 'react';
+
+// URL Backend
+const API_URL = 'http://localhost:5000';
+
+const CartItemRow = ({ item, onIncrease, onDecrease, onRemove }) => {
+  
+  // Fungsi Helper Pelengkap URL
+  const getImageUrl = (url) => {
+    if (!url) return 'https://via.placeholder.com/150';
+    if (url.startsWith('http')) return url;
+    return `${API_URL}${url}`;
+  };
+
+  return (
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 mb-4 bg-white rounded-xl shadow-sm border border-gray-100">
+      
+      {/* Gambar & Detail Menu */}
+      <div className="flex items-center gap-4 flex-1 w-full sm:w-auto mb-4 sm:mb-0">
+        <img 
+            // PAKAI HELPER DISINI:
+            src={getImageUrl(item.image_url || item.image)} 
+            alt={item.name} 
+            className="w-20 h-20 object-cover rounded-lg shadow-sm" 
+        />
+        <div>
+          <h4 className="font-bold text-gray-800 text-lg leading-tight">{item.name}</h4>
+          <p className="text-warung-orange font-bold mt-1">
+            Rp {parseInt(item.price).toLocaleString('id-ID')}
+          </p>
+        </div>
+      </div>
+
+      {/* Tombol Aksi (+, -, Hapus) */}
+      <div className="flex items-center justify-between w-full sm:w-auto gap-6">
+        
+        <div className="flex items-center bg-gray-100 rounded-lg border border-gray-200">
+          <button onClick={() => onDecrease(item.id)} className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-200 rounded-l-lg transition font-bold">-</button>
+          <span className="w-10 text-center font-bold text-gray-800">{item.qty}</span>
+          <button onClick={() => onIncrease(item.id)} className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-200 rounded-r-lg transition font-bold">+</button>
+        </div>
+
+        <button onClick={() => onRemove(item.id)} className="text-gray-400 hover:text-warung-btn1 transition p-2 hover:bg-red-50 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+        </button>
+
+      </div>
+    </div>
+  );
+};
+
+export default CartItemRow;
+</file>
+
+<file path="src/components/LoginModal.jsx">
+import React, { useState } from 'react';
+
+// --- KOLEKSI IKON ---
+const Icons = {
+  email: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>,
+  password: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-2h4l1-1 1.257-1.257A6 6 0 1118 8zm-6-4a4 4 0 100 8 4 4 0 000-8z" clipRule="evenodd" /></svg>,
+  person: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>,
+  phone: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>,
+  close: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+};
+
+const InputField = ({ label, type, placeholder, icon, value, onChange }) => (
+  <div className="mb-4">
+    <label className="block text-gray-700 text-sm font-semibold mb-2 flex items-center gap-2">
+      <span className="text-gray-500">{icon}</span> {label}
+    </label>
+    <input 
+      type={type} placeholder={placeholder} value={value} onChange={onChange} 
+      className="w-full px-4 py-3 rounded-md bg-white border border-gray-200 focus:border-warung-btn1 focus:ring-1 focus:ring-warung-btn1 focus:outline-none transition shadow-sm"
+      required
+    />
+  </div>
+);
+
+// TERIMA PROP: onRegisterSubmit
+const LoginModal = ({ onClose, initialTab = 'masuk', onLoginSubmit, onRegisterSubmit }) => {
+  const [activeTab, setActiveTab] = useState(initialTab);
+  
+  // STATE LOGIN
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPass, setLoginPass] = useState('');
+
+  // STATE REGISTER
+  const [regName, setRegName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPhone, setRegPhone] = useState('');
+  const [regPass, setRegPass] = useState('');
+  const [regConfirmPass, setRegConfirmPass] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (activeTab === 'masuk') {
+        // LOGIKA LOGIN
+        onLoginSubmit(loginEmail, loginPass);
+    } else {
+        // LOGIKA DAFTAR
+        if (regPass !== regConfirmPass) {
+            alert("Password dan Konfirmasi Password tidak sama!");
+            return;
+        }
+        // Panggil fungsi register dari App.jsx
+        const success = await onRegisterSubmit(regName, regEmail, regPass, regPhone);
+        if (success) {
+            setActiveTab('masuk'); // Kalau sukses, pindah ke tab masuk
+        }
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex justify-center items-center z-50 animate-fade-in p-4" onClick={onClose}>
+      <div className="w-full max-w-lg flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+        
+        <div className="bg-white w-full p-8 rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-warung-btn1 transition">{Icons.close}</button>
+
+          <div className="flex gap-4 mb-6 mt-2">
+            <button onClick={() => setActiveTab('masuk')} className={`flex-1 py-3 text-xl font-bold rounded-lg transition-all shadow-sm ${activeTab === 'masuk' ? 'bg-warung-btn1 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>Masuk</button>
+            <button onClick={() => setActiveTab('daftar')} className={`flex-1 py-3 text-xl font-bold rounded-lg transition-all shadow-sm ${activeTab === 'daftar' ? 'bg-warung-btn1 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>Daftar</button>
+          </div>
+
+          <form className="space-y-2" onSubmit={handleSubmit}>
+            {activeTab === 'masuk' ? (
+              <div className="animate-fade-in">
+                <InputField label="Email" type="email" placeholder="admin@admin.com" icon={Icons.email} value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
+                <InputField label="Password" type="password" placeholder="admin1234" icon={Icons.password} value={loginPass} onChange={(e) => setLoginPass(e.target.value)} />
+              </div>
+            ) : (
+               <div className="animate-fade-in">
+                 <InputField label="Nama Pengguna" type="text" placeholder="Jojo" icon={Icons.person} value={regName} onChange={(e) => setRegName(e.target.value)} />
+                 <InputField label="Email" type="email" placeholder="jojo@user.com" icon={Icons.email} value={regEmail} onChange={(e) => setRegEmail(e.target.value)} />
+                 <InputField label="Nomor WhatsApp" type="tel" placeholder="0822..." icon={Icons.phone} value={regPhone} onChange={(e) => setRegPhone(e.target.value)} />
+                 <InputField label="Password" type="password" placeholder="Password" icon={Icons.password} value={regPass} onChange={(e) => setRegPass(e.target.value)} />
+                 <InputField label="Konfirmasi Password" type="password" placeholder="Ulangi Password" icon={Icons.password} value={regConfirmPass} onChange={(e) => setRegConfirmPass(e.target.value)} />
+               </div>
+            )}
+
+            <div className="mt-8 space-y-4 text-center">
+              <button className="w-full bg-warung-btn1 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-md transition transform hover:scale-[1.01] text-xl">
+                {activeTab === 'masuk' ? 'Masuk' : 'Daftar Sekarang'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LoginModal;
+</file>
+
+<file path="src/components/MenuCard.jsx">
+import React from 'react';
+
+// URL Backend (Supaya bisa akses folder /uploads)
+const API_URL = 'http://localhost:5000';
+
+const MenuCard = ({ item, onAddToCart }) => {
+  // Logika URL Gambar:
+  // 1. Jika gambar dari internet (https://...), pakai langsung.
+  // 2. Jika gambar uploadan (/uploads/...), tambahkan http://localhost:5000 di depannya.
+  const getImageUrl = (url) => {
+    if (!url) return 'https://via.placeholder.com/150'; // Gambar cadangan kalau kosong
+    if (url.startsWith('http')) return url; // Link eksternal (Unsplash dll)
+    return `${API_URL}${url}`; // Link internal (Uploadan sendiri)
+  };
+
+  return (
+    <div className="bg-warung-kolom rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
+      
+      <div className="h-48 overflow-hidden relative">
+        <img 
+          // PERBAIKAN UTAMA DI SINI:
+          src={getImageUrl(item.image_url || item.image)} 
+          alt={item.name} 
+          className="w-full h-full object-cover transform hover:scale-110 transition duration-500"
+        />
+        
+        {/* Badge Status */}
+        <div className={`absolute bottom-2 right-2 px-3 py-1 rounded-full text-xs font-bold text-white ${item.is_available ? 'bg-green-600' : 'bg-gray-500'}`}>
+          {item.is_available ? 'Tersedia' : 'Habis'}
+        </div>
+      </div>
+
+      <div className="p-4 flex flex-col flex-1">
+        <h3 className="font-bold text-lg text-gray-800 mb-1">{item.name}</h3>
+        <p className="text-gray-500 text-sm mb-4 line-clamp-2 flex-1">{item.description}</p>
+        
+        <div className="flex justify-between items-center mt-auto">
+          <span className="text-warung-orange font-bold text-lg">
+            Rp {parseInt(item.price).toLocaleString('id-ID')}
+          </span>
+          
+          <button 
+            disabled={!item.is_available} 
+            onClick={() => onAddToCart(item)}
+            className={`flex items-center gap-1 px-4 py-2 rounded-lg text-white font-medium transition ${
+              item.is_available 
+                ? 'bg-warung-btn1 hover:bg-warung-red-dark shadow-md active:scale-95' 
+                : 'bg-gray-300 cursor-not-allowed'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+            {item.is_available ? 'Tambah' : 'Stok Habis'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MenuCard;
+</file>
+
+<file path="src/dataMenu.js">
+export const menuItems = [
+      {
+    id: 1,
+    name: "Sate Ayam",
+    description: "Sate ayam bakar dengan bumbu kacang khas dan lontong",
+    price: 25000,
+    category: "Makanan",
+    available: true,
+    image: "https://images.unsplash.com/photo-1555126634-323283e090fa?w=500&auto=format&fit=crop"
+  },
+  {
+    id: 2,
+    name: "Soto Ayam",
+    description: "Sup ayam kuning dengan rempah, soun, dan telur rebus",
+    price: 20000,
+    category: "Makanan",
+    available: false, 
+    image: "https://images.unsplash.com/photo-1572656631137-7935297eff55?w=500&auto=format&fit=crop"
+  },
+  {
+    id: 3,
+    name: "Es Teh Manis",
+    description: "Teh manis dingin segar dengan lemon",
+    price: 8000,
+    category: "Minuman",
+    available: true,
+    image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500&auto=format&fit=crop"
+  },
+  {
+    id: 4,
+    name: "Kopi Susu Gula Aren",
+    description: "Kopi susu kekinian dengan gula aren asli",
+    price: 15000,
+    category: "Minuman",
+    available: true,
+    image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?w=500&auto=format&fit=crop"
+  }
+];
+</file>
+
+<file path="src/index.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Sembunyikan Scrollbar tapi tetap bisa di-scroll */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+</file>
+
+<file path="src/LandingPage.jsx">
+import React, { useState } from 'react'; // <--- Baris ini yang kemungkinan hilang tadi
+import bgImage from './assets/bgkita.jpg'; 
+import LoginModal from './components/LoginModal';
+
+// Tambahkan prop 'onRegisterAttempt' di sini
+const LandingPage = ({ onLoginAttempt, onRegisterAttempt }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [initialTab, setInitialTab] = useState('masuk');
+
+  const openModal = (tabName) => {
+    setInitialTab(tabName);
+    setShowModal(true);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col font-sans">
+      
+      {/* MODAL (Login / Register) */}
+      {showModal && (
+        <LoginModal 
+            onClose={() => setShowModal(false)} 
+            initialTab={initialTab}
+            onLoginSubmit={onLoginAttempt}
+            onRegisterSubmit={onRegisterAttempt} // <--- Pastikan ini terkirim
+        />
+      )}
+
+      {/* NAVBAR */}
+      <nav className="bg-warung-navbar px-6 py-4 flex justify-between items-center shadow-lg relative z-20">
+        <div className="bg-white px-4 py-1 rounded shadow-sm">
+           <h1 className="text-warung-navbar font-bold text-xl tracking-widest leading-none">WARUNGKU</h1>
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+      <div className="flex-1 relative flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
+        <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div className="relative z-10 text-center flex flex-col items-center px-4 w-full max-w-md animate-fade-in">
+          <div className="mb-6 text-orange-500">
+             <svg xmlns="http://www.w3.org/2000/svg" className="w-24 h-24 mx-auto drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" /></svg>
+          </div>
+          <h2 className="text-white text-4xl font-bold mb-2 tracking-wide drop-shadow-md font-sans">WarungKu !</h2>
+          <p className="text-warung-btn1 font-bold mb-10 text-xl tracking-wide drop-shadow-md">Order Cepat, Makan Nikmat</p>
+          
+          <div className="space-y-4 w-3/4">
+            <button onClick={() => openModal('masuk')} className="w-full bg-warung-btn1 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg text-xl shadow-lg transition transform hover:-translate-y-1">Masuk</button>
+            <button onClick={() => openModal('daftar')} className="w-full bg-white bg-opacity-20 backdrop-blur-md hover:bg-opacity-30 text-white font-bold py-3 px-8 rounded-lg text-xl shadow-lg border border-white/40 transition transform hover:-translate-y-1">Daftar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LandingPage;
+</file>
+
+<file path="src/main.jsx">
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+</file>
+
+<file path="src/MenuPage.jsx">
+import React, { useState, useEffect } from 'react';
+import MenuCard from './components/MenuCard';
+import CartView from './CartView'; 
+import OrderSuccess from './OrderSuccess'; 
+import TrackOrder from './TrackOrder'; 
+// import OrderHistory dari sini telah dihapus
+
+const MenuPage = ({ onLogout, userName, userEmail }) => { 
+  // --- STATE MANAGEMENT ---
+  const [lastTxCode, setLastTxCode] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('Semua');
+  
+  const [searchTerm, setSearchTerm] = useState(''); 
+
+  const [cart, setCart] = useState([]);
+  const [currentView, setCurrentView] = useState('menu'); 
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // State Data dari Backend
+  const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // --- FETCH DATA DARI BACKEND (JANGAN DIHAPUS) ---
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/menu');
+        const data = await response.json();
+        setMenuItems(data); 
+        setLoading(false);
+      } catch (error) {
+        console.error("Gagal mengambil menu:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchMenu();
+  }, []);
+
+  // --- LOGIKA KERANJANG ---
+  const addToCart = (item) => {
+    const existingItem = cart.find(x => x.id === item.id);
+    if (existingItem) {
+      setCart(cart.map(x => x.id === item.id ? {...existingItem, qty: existingItem.qty + 1} : x));
+    } else {
+      setCart([...cart, { ...item, qty: 1 }]);
+    }
+  };
+
+  const increaseQty = (id) => {
+    setCart(cart.map(item => item.id === id ? { ...item, qty: item.qty + 1 } : item));
+  };
+
+  const decreaseQty = (id) => {
+    setCart(cart.map(item => {
+      if (item.id === id) {
+        const newQty = item.qty - 1;
+        return newQty > 0 ? { ...item, qty: newQty } : null; 
+      }
+      return item;
+    }).filter(Boolean));
+  };
+
+  const removeFromCart = (id) => {
+    setCart(cart.filter(item => item.id !== id));
+  };
+
+  const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
+  const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+  // --- 2. PERBAIKAN LOGIKA FILTER (SEARCH + CATEGORY) ---
+  const filteredItems = menuItems.filter(item => {
+    const matchCategory = activeCategory === 'Semua' || item.category === activeCategory;
+    const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchCategory && matchSearch;
+  });
+
+
+  // --- ROUTING TAMPILAN ---
+  // if (currentView === 'history') { return <OrderHistory onBack={() => setCurrentView('menu')} />; } <-- DIHAPUS
+  
+  if (currentView === 'track') {
+      return <TrackOrder onBack={() => setCurrentView('menu')} />;
+  }
+
+  if (currentView === 'success') {
+    return (
+        <OrderSuccess 
+            transactionCode={lastTxCode} 
+            onBackToHome={() => {
+                setCurrentView('menu');
+                setCart([]); 
+            }} 
+        />
+    );
+  }
+
+  if (currentView === 'cart') {
+    return (
+        <CartView 
+            cart={cart}
+            totalPrice={totalPrice}
+            onBack={() => setCurrentView('menu')}
+            onIncrease={increaseQty}
+            onDecrease={decreaseQty}
+            onRemove={removeFromCart}
+            onConfirmOrder={(code) => { 
+                setLastTxCode(code); 
+                setCurrentView('success'); 
+            }} 
+        />
+    );
+  }
+
+  // --- TAMPILAN UTAMA (MENU) ---
+  return (
+    <div className="min-h-screen bg-warung-bg font-sans pb-24 animate-fade-in">
+      
+      {/* NAVBAR */}
+      <nav className="bg-warung-navbar px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div className="bg-white px-3 py-1 rounded shadow-sm">
+           <h1 className="text-warung-navbar font-bold text-xl tracking-widest leading-none">WARUNGKU</h1>
+        </div>
+        <div className="flex items-center gap-3 md:gap-4">
+            <button className="hidden md:flex items-center gap-2 bg-warung-btn1 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-red-700 transition">
+                <span>🛍️</span> Menu
+            </button>
+            
+            <button 
+                onClick={() => setCurrentView('track')} 
+                className="flex items-center gap-2 bg-warung-btn1 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-red-700 transition"
+            >
+                <span>🔔</span> <span className="hidden md:inline">Cek Status</span>
+            </button>
+            
+            <div className="relative">
+                <button 
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    className="flex items-center gap-2 text-green-500 font-bold bg-black bg-opacity-20 px-3 py-1 rounded-full cursor-pointer hover:bg-opacity-30 transition select-none"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span className="text-sm md:text-base">{userName || 'Pengguna'}</span>
+                </button>
+
+                {showProfileMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 border border-gray-100 animate-fade-in">
+                        <div className="px-4 py-2 border-b border-gray-100">
+                            <p className="text-sm font-bold text-gray-800">Halo, {userName}!</p> 
+                            <p className="text-xs text-gray-500">{userEmail}</p> 
+                        </div>
+                        
+                        {/* TOMBOL RIWAYAT PESANAN TELAH DIHAPUS */}
+                        
+                        <button 
+                            onClick={onLogout}
+                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-bold flex items-center gap-2 transition"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                            Keluar
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+      </nav>
+
+      {/* SUB HEADER (FILTER & SEARCH) */}
+      {/* ... (tidak berubah) */}
+      <div className="bg-warung-shadow-color px-6 py-6 shadow-md">
+        <div className="max-w-7xl mx-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 pl-1">Pilih Menu Anda</h2>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="flex gap-3 overflow-x-auto pb-2 w-full md:flex-1 hide-scrollbar">
+                    {['Semua', 'Makanan', 'Minuman', 'Cemilan'].map((cat) => (
+                        <button 
+                            key={cat}
+                            onClick={() => setActiveCategory(cat)}
+                            className={`px-5 py-2 rounded-lg font-bold shadow-sm whitespace-nowrap transition border text-sm ${
+                                activeCategory === cat 
+                                ? 'bg-warung-btn1 text-white border-warung-btn1' 
+                                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50' 
+                            }`}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
+                
+                <div className="relative w-full md:w-60 shrink-0">
+                    <input 
+                        type="text" 
+                        placeholder="Cari makan..." 
+                        value={searchTerm} 
+                        onChange={(e) => setSearchTerm(e.target.value)} 
+                        className="w-full pl-10 pr-4 py-2 rounded-lg bg-warung-btn1 text-white placeholder-white/80 focus:outline-none shadow-inner text-sm"
+                    />
+                    <div className="absolute left-3 top-2.5 text-white/80">
+                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+      </div>
+
+      {/* MAIN CONTENT (LIST MAKANAN) */}
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+        
+        {loading ? (
+           <div className="text-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warung-btn1 mx-auto"></div>
+              <p className="mt-4 text-gray-500">Sedang memuat menu lezat...</p>
+           </div>
+        ) : filteredItems.length > 0 ? (
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredItems.map((item) => (
+                  <MenuCard 
+                      key={item.id} 
+                      item={item} 
+                      onAddToCart={addToCart}
+                  />
+              ))}
+           </div>
+        ) : (
+           <div className="text-center py-20 text-gray-500 font-bold">
+              <p>Menu tidak ditemukan 😢</p>
+           </div>
+        )}
+
+      </main>
+
+      {/* FLOATING CART */}
+      {cart.length > 0 && (
+        <div className="fixed bottom-0 left-0 w-full p-4 z-50 animate-slide-up">
+            <div className="max-w-7xl mx-auto">
+                <button 
+                    onClick={() => setCurrentView('cart')}
+                    className="w-full bg-warung-btn1 text-white py-4 px-6 rounded-xl shadow-2xl flex justify-between items-center hover:bg-red-700 transition transform hover:scale-[1.01]"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="bg-white/20 p-2 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                        </div>
+                        <div className="text-left">
+                            <span className="block font-bold text-lg leading-none">
+                                {totalItems} Item
+                            </span>
+                            <span className="text-xs text-white/80">Lihat Keranjang</span>
+                        </div>
+                    </div>
+                    <div className="font-bold text-xl">
+                        Rp {totalPrice.toLocaleString('id-ID')}
+                    </div>
+                </button>
+            </div>
+        </div>
+      )}
+
+    </div>
+  );
+};
+
+export default MenuPage;
+</file>
+
+<file path="src/OrderSuccess.jsx">
+import React, { useState } from 'react';
+
+// MENERIMA PROP transactionCode DARI PARENT (MenuPage)
+const OrderSuccess = ({ onBackToHome, transactionCode }) => {
+  
+  // HAPUS GENERATE KODE RANDOM DISINI
+  
+  // Hitung waktu batas bayar (1 jam dari sekarang)
+  const deadline = new Date(new Date().getTime() + 60 * 60 * 1000).toLocaleTimeString('id-ID', {
+    hour: '2-digit', minute: '2-digit'
+  });
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    // Copy kode transaksi yang asli
+    navigator.clipboard.writeText(transactionCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000); 
+  };
+
+  return (
+    <div className="min-h-screen bg-warung-bg font-sans pb-10 animate-fade-in">
+      
+      {/* NAVBAR */}
+      <nav className="bg-warung-navbar px-6 py-4 flex justify-between items-center shadow-warung">
+        <div className="bg-white px-3 py-1 rounded shadow-sm">
+           <h1 className="text-warung-navbar font-bold text-xl tracking-widest leading-none">WARUNGKU</h1>
+        </div>
+        <div className="flex items-center gap-2 text-white font-bold">
+            <span>👋 Sampai Jumpa</span>
+        </div>
+      </nav>
+
+      {/* HEADER HIJAU */}
+      <div className="bg-warung-btn2 py-12 px-6 text-center text-white shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <div className="relative z-10 flex flex-col items-center">
+            <div className="bg-white/20 p-4 rounded-full mb-4 animate-bounce-slow">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h2 className="text-3xl font-bold tracking-wide">Pesanan Diterima!</h2>
+            <p className="opacity-90 mt-2">Terima kasih telah memesan di WarungKu</p>
+        </div>
+      </div>
+
+      {/* KONTEN KARTU */}
+      <main className="max-w-xl mx-auto px-6 -mt-8 relative z-20 space-y-6">
+        
+        {/* KARTU KODE TRANSAKSI */}
+        <div className="bg-white p-8 rounded-2xl shadow-xl text-center border-t-4 border-warung-btn2">
+            <p className="text-gray-500 font-bold text-sm uppercase tracking-wider mb-2">Kode Transaksi</p>
+            
+            <div className="flex justify-center items-center gap-3 mb-4">
+                {/* TAMPILKAN KODE ASLI */}
+                <span className="text-3xl font-bold text-warung-navbar tracking-widest">
+                    {transactionCode || "ERROR-CODE"}
+                </span>
+                
+                <button 
+                    onClick={handleCopy}
+                    className="text-gray-400 hover:text-warung-btn2 transition relative group"
+                    title="Salin Kode"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    {copied && <span className="absolute -top-8 -left-4 bg-black text-white text-xs px-2 py-1 rounded">Disalin!</span>}
+                </button>
+            </div>
+
+            <div className="inline-block bg-yellow-100 text-yellow-700 px-6 py-1.5 rounded-full text-sm font-bold border border-yellow-200">
+                Menunggu Pembayaran
+            </div>
+        </div>
+
+        {/* INFO LAINNYA */}
+        <div className="bg-white p-6 rounded-2xl shadow-md space-y-4">
+            <div className="flex items-start gap-3 p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-orange-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <p className="text-gray-800 font-bold text-sm">Batas Waktu Pembayaran</p>
+                    <p className="text-orange-500 font-medium text-sm">Bayar sebelum <span className="font-bold">{deadline} WIB</span></p>
+                </div>
+            </div>
+
+             <div className="border-t pt-4 mt-2">
+                <p className="text-xs text-gray-500 mb-2 font-bold uppercase">Instruksi:</p>
+                <p className="text-sm text-gray-600">Silakan tunjukkan kode transaksi di atas kepada Kasir WarungKu untuk menyelesaikan pembayaran.</p>
+             </div>
+        </div>
+
+        <button 
+            onClick={onBackToHome}
+            className="w-full bg-warung-btn2 hover:bg-green-800 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] flex justify-center items-center gap-2"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Kembali ke Menu
+        </button>
+
+      </main>
+    </div>
+  );
+};
+
+export default OrderSuccess;
+</file>
+
+<file path="src/TrackOrder.jsx">
+import React, { useState } from 'react';
+
+const TrackOrder = ({ onBack }) => {
+  const [searchCode, setSearchCode] = useState('');
+  const [orderResult, setOrderResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  // FUNGSI CEK STATUS KE BACKEND
+  const handleCheckStatus = async (e) => {
+    e.preventDefault();
+    if (!searchCode) return;
+
+    setIsLoading(true);
+    setErrorMsg('');
+    setOrderResult(null);
+    
+    try {
+        // Tembak API Backend
+        const response = await fetch(`http://localhost:5000/api/orders/${searchCode}`);
+        const data = await response.json();
+
+        if (response.ok) {
+            // Jika ketemu, simpan datanya
+            setOrderResult(data);
+        } else {
+            // Jika 404 atau error lain
+            setErrorMsg(data.message || 'Pesanan tidak ditemukan');
+        }
+    } catch (err) {
+        console.error(err);
+        setErrorMsg('Gagal terhubung ke server');
+    } finally {
+        setIsLoading(false);
+    }
+  };
+  
+  // Fungsi helper untuk memformat tanggal
+  const formatOrderDate = (timestamp) => {
+      if (!timestamp) return 'Tanggal tidak diketahui';
+      const date = new Date(timestamp);
+      return date.toLocaleDateString('id-ID', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+      });
+  };
+
+  return (
+    <div className="min-h-screen bg-warung-bg font-sans pb-10 animate-fade-in">
+      
+      {/* NAVBAR */}
+      <nav className="bg-warung-navbar px-6 py-4 flex justify-between items-center shadow-warung sticky top-0 z-50">
+        <div className="bg-white px-3 py-1 rounded shadow-sm">
+           <h1 className="text-warung-navbar font-bold text-xl tracking-widest leading-none">WARUNGKU</h1>
+        </div>
+        <button onClick={onBack} className="flex items-center gap-2 bg-warung-btn1 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-red-700 transition">
+             <span>🛍️</span> Kembali ke Menu
+        </button>
+      </nav>
+
+      {/* HEADER */}
+      <div className="bg-warung-shadow-color px-6 py-8 shadow-md text-center md:text-left">
+        <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Lacak Pesanan Anda</h2>
+            <p className="text-warung-navbar/80 font-medium">Masukkan kode transaksi untuk melihat status pesanan</p>
+        </div>
+      </div>
+
+      <main className="max-w-4xl mx-auto px-4 md:px-6 py-8">
+        
+        {/* FORM PENCARIAN */}
+        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-white/50 mb-8">
+            <form onSubmit={handleCheckStatus}>
+                <label className="block text-gray-700 font-bold mb-3 pl-1">Masukkan Kode Transaksi (Contoh: WRG-xxxx)</label>
+                
+                <div className="flex flex-col md:flex-row gap-4">
+                    <input 
+                        type="text" 
+                        value={searchCode}
+                        onChange={(e) => setSearchCode(e.target.value)}
+                        placeholder="Tempel kode transaksi di sini..." 
+                        className="flex-1 px-6 py-4 rounded-xl bg-white border border-gray-300 focus:border-warung-btn1 focus:ring-4 focus:ring-warung-btn1/20 focus:outline-none transition shadow-inner text-lg"
+                    />
+                    <button 
+                        type="submit"
+                        disabled={isLoading}
+                        className="bg-warung-btn1 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-2 min-w-[160px]"
+                    >
+                        {isLoading ? (
+                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                            <>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                <span>Cek Status</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+                {/* Pesan Error */}
+                {errorMsg && (
+                    <p className="text-red-600 font-bold mt-3 animate-pulse">❌ {errorMsg}</p>
+                )}
+            </form>
+        </div>
+
+        {/* HASIL PENCARIAN */}
+        {orderResult && (
+            <div className="bg-warung-kolom p-6 md:p-8 rounded-2xl shadow-xl border border-warung-shadow-color/20 animate-slide-up">
+                
+                {/* Header Hasil */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 pb-4 mb-6">
+                    <div>
+                        <p className="text-gray-500 text-sm font-bold uppercase tracking-wider">Kode Transaksi</p>
+                        <h3 className="text-2xl font-bold text-warung-btn1 mb-1">{orderResult.id}</h3>
+                        
+                        {/* TAMPILAN BARU: TANGGAL PESANAN */}
+                        {orderResult.timeline && orderResult.timeline[0] && (
+                           <p className="text-sm text-gray-600 font-medium">
+                               Dipesan pada: <span className="font-bold">{formatOrderDate(orderResult.timeline[0].time)}</span>
+                           </p>
+                        )}
+                    </div>
+                    <div className="mt-2 md:mt-0 text-right">
+                        <p className="text-gray-500 text-sm">Pelanggan</p>
+                        <p className="font-bold text-gray-800">{orderResult.customer}</p>
+                    </div>
+                </div>
+
+                {/* Status Saat Ini */}
+                <div className={`border px-4 py-3 rounded-lg mb-8 flex items-center gap-3 ${
+                    orderResult.status === 'Selesai' 
+                    ? 'bg-green-100 border-green-200 text-green-800' 
+                    : 'bg-yellow-100 border-yellow-200 text-yellow-800'
+                }`}>
+                    <span className="relative flex h-3 w-3">
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                          orderResult.status === 'Selesai' ? 'bg-green-400' : 'bg-yellow-400'
+                      }`}></span>
+                      <span className={`relative inline-flex rounded-full h-3 w-3 ${
+                          orderResult.status === 'Selesai' ? 'bg-green-500' : 'bg-yellow-500'
+                      }`}></span>
+                    </span>
+                    <span className="font-bold">Status: {orderResult.status}</span>
+                </div>
+
+                {/* Detail Item yang Dipesan */}
+                <div className="mb-8">
+                    <p className="font-bold text-gray-700 mb-2">Menu Dipesan:</p>
+                    <div className="bg-white p-4 rounded-xl border border-gray-200 text-gray-800 font-medium">
+                        {orderResult.items}
+                    </div>
+                </div>
+
+                {/* TIMELINE */}
+                <div className="relative pl-4 md:pl-8 space-y-8">
+                    <div className="absolute left-[23px] md:left-[39px] top-2 bottom-4 w-0.5 bg-gray-300"></div>
+
+                    {orderResult.timeline.map((step, index) => (
+                        <div key={index} className="relative flex items-start gap-4 md:gap-6">
+                            <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center border-4 ${
+                                step.done 
+                                ? 'bg-warung-btn2 border-warung-bg text-white' 
+                                : step.active 
+                                    ? 'bg-warung-orange border-warung-bg text-white animate-pulse' 
+                                    : 'bg-gray-300 border-warung-bg text-gray-500'
+                            }`}>
+                                {step.done ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                                ) : (
+                                    <span className="w-2 h-2 bg-current rounded-full"></span>
+                                )}
+                            </div>
+
+                            <div className={`${step.done || step.active ? 'opacity-100' : 'opacity-50'}`}>
+                                <h4 className={`font-bold text-lg ${step.active ? 'text-warung-orange' : 'text-gray-800'}`}>
+                                    {step.status}
+                                </h4>
+                                <p className="text-sm text-gray-500">{step.time}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+            </div>
+        )}
+
+      </main>
+    </div>
+  );
+};
+
+export default TrackOrder;
+</file>
+
+<file path="tailwind.config.js">
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        'warung-bg': '#D2B48C',       // Background Utama
+        'warung-navbar': '#8B4513',   // Navbar
+        'warung-btn1': '#C0392B',     // Tombol Merah
+        'warung-btn2': '#178538',     // Tombol Hijau
+        'warung-kolom': '#F2F5E6',    // Kartu Menu
+        'warung-shadow-color': '#C27B48', // Warna Bayangan (disimpan sbg variabel juga)
+      },
+      // INI DIA YANG KITA TAMBAH: Bayangan khusus warna #C27B48
+      boxShadow: {
+        'warung': '0 15px 30px -5px #C27B48', 
+      }
+    },
+  },
+  plugins: [],
+}
+</file>
+
+<file path="vite.config.js">
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+</file>
+
+</files>
