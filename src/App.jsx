@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-// 1. IMPORT LIBRARY INI
 import { Toaster, toast } from 'react-hot-toast'; 
 
 import LandingPage from './LandingPage';
 import MenuPage from './MenuPage';
 import AdminPage from './AdminPage';
+
+// 👇 LINK BACKEND BACKEND VERCEL
+const API_URL = 'https://backend-warungku.vercel.app';
 
 function App() {
   const [userRole, setUserRole] = useState(() => {
@@ -20,7 +22,8 @@ function App() {
     const loadingToast = toast.loading('Sedang masuk...');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      // ✅ Fetch ke backend Vercel
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -51,7 +54,8 @@ function App() {
   const handleRegister = async (name, email, password, phone) => {
     const loadingToast = toast.loading('Mendaftarkan akun...');
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      // ✅ Fetch ke backend Vercel
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, phone })
@@ -103,7 +107,7 @@ function App() {
         <MenuPage 
             onLogout={handleLogout} 
             userName={userData?.name} 
-            userEmail={userData?.email} // <-- PERUBAHAN: Kirim email user
+            userEmail={userData?.email} 
         />
       ) : (
         <LandingPage onLoginAttempt={handleLogin} onRegisterAttempt={handleRegister} />
