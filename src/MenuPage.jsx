@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import MenuCard from './components/MenuCard';
+import MenuCard from './components/MenuCard'; 
 import CartView from './CartView'; 
 import OrderSuccess from './OrderSuccess'; 
 import TrackOrder from './TrackOrder'; 
-// import OrderHistory dari sini telah dihapus
+
+const API_URL = 'https://backend-warungku.vercel.app';
 
 const MenuPage = ({ onLogout, userName, userEmail }) => { 
-  // --- STATE MANAGEMENT ---
   const [lastTxCode, setLastTxCode] = useState(null);
   const [activeCategory, setActiveCategory] = useState('Semua');
   
@@ -16,15 +16,14 @@ const MenuPage = ({ onLogout, userName, userEmail }) => {
   const [currentView, setCurrentView] = useState('menu'); 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  // State Data dari Backend
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- FETCH DATA DARI BACKEND (JANGAN DIHAPUS) ---
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/menu');
+
+        const response = await fetch(`${API_URL}/api/menu`);
         const data = await response.json();
         setMenuItems(data); 
         setLoading(false);
@@ -37,7 +36,6 @@ const MenuPage = ({ onLogout, userName, userEmail }) => {
     fetchMenu();
   }, []);
 
-  // --- LOGIKA KERANJANG ---
   const addToCart = (item) => {
     const existingItem = cart.find(x => x.id === item.id);
     if (existingItem) {
@@ -68,17 +66,12 @@ const MenuPage = ({ onLogout, userName, userEmail }) => {
   const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-  // --- 2. PERBAIKAN LOGIKA FILTER (SEARCH + CATEGORY) ---
   const filteredItems = menuItems.filter(item => {
     const matchCategory = activeCategory === 'Semua' || item.category === activeCategory;
     const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     return matchCategory && matchSearch;
   });
 
-
-  // --- ROUTING TAMPILAN ---
-  // if (currentView === 'history') { return <OrderHistory onBack={() => setCurrentView('menu')} />; } <-- DIHAPUS
-  
   if (currentView === 'track') {
       return <TrackOrder onBack={() => setCurrentView('menu')} />;
   }
@@ -112,11 +105,9 @@ const MenuPage = ({ onLogout, userName, userEmail }) => {
     );
   }
 
-  // --- TAMPILAN UTAMA (MENU) ---
   return (
     <div className="min-h-screen bg-warung-bg font-sans pb-24 animate-fade-in">
       
-      {/* NAVBAR */}
       <nav className="bg-warung-navbar px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         <div className="bg-white px-3 py-1 rounded shadow-sm">
            <h1 className="text-warung-navbar font-bold text-xl tracking-widest leading-none">WARUNGKU</h1>
@@ -149,8 +140,6 @@ const MenuPage = ({ onLogout, userName, userEmail }) => {
                             <p className="text-xs text-gray-500">{userEmail}</p> 
                         </div>
                         
-                        {/* TOMBOL RIWAYAT PESANAN TELAH DIHAPUS */}
-                        
                         <button 
                             onClick={onLogout}
                             className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-bold flex items-center gap-2 transition"
@@ -164,8 +153,6 @@ const MenuPage = ({ onLogout, userName, userEmail }) => {
         </div>
       </nav>
 
-      {/* SUB HEADER (FILTER & SEARCH) */}
-      {/* ... (tidak berubah) */}
       <div className="bg-warung-shadow-color px-6 py-6 shadow-md">
         <div className="max-w-7xl mx-auto">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 pl-1">Pilih Menu Anda</h2>
@@ -203,7 +190,6 @@ const MenuPage = ({ onLogout, userName, userEmail }) => {
         </div>
       </div>
 
-      {/* MAIN CONTENT (LIST MAKANAN) */}
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
         
         {loading ? (
@@ -229,7 +215,6 @@ const MenuPage = ({ onLogout, userName, userEmail }) => {
 
       </main>
 
-      {/* FLOATING CART */}
       {cart.length > 0 && (
         <div className="fixed bottom-0 left-0 w-full p-4 z-50 animate-slide-up">
             <div className="max-w-7xl mx-auto">
