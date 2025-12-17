@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from 'react'; // <-- TAMBAHKAN useEffect
-import CartItemRow from './components/CartItemRow';
-import { toast } from 'react-hot-toast'; // <-- BARU: Import toast
+import React, { useState, useEffect } from 'react';
+import CartItemRow from './components/CartItemRow'; 
+import { toast } from 'react-hot-toast';
+
+// 👇 LINK BACKEND BACKEND VERCEL
+const API_URL = 'https://backend-warungku.vercel.app';
 
 const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, onConfirmOrder }) => {
-  // 1. STATE UNTUK FORM DATA
   const [formData, setFormData] = useState({
     name: '',
     whatsapp: '',
     address: '',
-    notes: '' // Opsional
+    notes: '' 
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false); // Untuk loading button
+  const [isSubmitting, setIsSubmitting] = useState(false); 
   
-  // --- BARU: LOGIKA AUTO-FILL DARI USER DATA ---
   useEffect(() => {
     const storedData = localStorage.getItem('userData');
     if (storedData) {
       try {
         const userData = JSON.parse(storedData);
-        // Otomatis isi Nama dan WhatsApp
         setFormData(prevData => ({
           ...prevData,
           name: userData.name || '',
-          // Kita asumsikan ada field phone_number di userData (atau ganti jika nama fieldnya beda)
           whatsapp: userData.phone_number || '', 
         }));
       } catch (e) {
@@ -31,46 +30,39 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
       }
     }
   }, []);
-  // ---------------------------------------------
 
-
-  // Handle perubahan input ketikan user
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 2. FUNGSI KIRIM KE BACKEND (POST)
   const handleSubmit = async () => {
-    // Validasi Sederhana
     if (!formData.name || !formData.whatsapp || !formData.address) {
-      toast.error("Mohon lengkapi Nama, WhatsApp, dan Alamat!"); // <-- GANTI ALERT JADI TOAST
+      toast.error("Mohon lengkapi Nama, WhatsApp, dan Alamat!");
       return;
     }
 
-    setIsSubmitting(true); // Nyalakan loading
+    setIsSubmitting(true); 
 
     try {
-      // Ambil ID user dari localStorage
       const storedData = localStorage.getItem('userData');
       const userData = storedData ? JSON.parse(storedData) : null;
       const userId = userData ? userData.id : null; 
 
-      // Siapkan data sesuai format Backend (orderController.js)
       const payload = {
-        user_id: userId, // KIRIM ID USER DISINI
+        user_id: userId, 
         customer_name: formData.name,
         customer_whatsapp: formData.whatsapp,
         customer_address: formData.address,
         total_price: totalPrice,
         cart_items: cart.map(item => ({
-            id: item.id,      // ID Produk
-            qty: item.qty,    // Jumlah
-            price: item.price // Harga saat beli
+            id: item.id,      
+            qty: item.qty,    
+            price: item.price 
         }))
       };
 
-      // Tembak API
-      const response = await fetch('http://localhost:5000/api/orders', {
+      // ✅ Fetch ke backend Vercel
+      const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,25 +73,22 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
       const result = await response.json();
 
       if (response.ok) {
-        // SUKSES!
         onConfirmOrder(result.transaction_code); 
       } else {
-        // ERROR DARI BACKEND
-        toast.error("Gagal memesan: " + result.error); // <-- GANTI ALERT JADI TOAST
+        toast.error("Gagal memesan: " + (result.message || result.error)); 
       }
 
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Terjadi kesalahan koneksi ke server."); // <-- GANTI ALERT JADI TOAST
+      toast.error("Terjadi kesalahan koneksi ke server."); 
     } finally {
-      setIsSubmitting(false); // Matikan loading
+      setIsSubmitting(false); 
     }
   };
 
   return (
     <div className="min-h-screen bg-warung-bg font-sans pb-10 animate-fade-in">
       
-      {/* NAVBAR */}
       <nav className="bg-warung-navbar px-6 py-4 flex justify-between items-center shadow-warung sticky top-0 z-50">
         <div className="bg-white px-3 py-1 rounded shadow-sm">
            <h1 className="text-warung-navbar font-bold text-xl tracking-widest leading-none">WARUNGKU</h1>
@@ -110,7 +99,6 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
         </div>
       </nav>
 
-      {/* SUB-HEADER */}
       <div className="bg-warung-shadow-color px-6 py-6 shadow-md">
         <div className="max-w-7xl mx-auto">
             <button onClick={onBack} className="flex items-center gap-2 text-warung-navbar bg-white/30 px-4 py-2 rounded-full text-sm font-bold mb-4 hover:bg-white/50 w-fit transition group">
@@ -121,10 +109,8 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 flex flex-col lg:flex-row gap-8 items-start">
         
-        {/* KIRI: RINGKASAN PESANAN */}
         <div className="flex-1 w-full lg:max-w-2xl lg:sticky lg:top-28">
             <h3 className="text-xl font-bold text-gray-800 mb-4 pl-1">Ringkasan Pesanan</h3>
             <div className="bg-warung-kolom p-6 rounded-2xl shadow-sm border border-warung-shadow-color/20">
@@ -148,7 +134,6 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
             </div>
         </div>
 
-        {/* KANAN: FORM INPUT */}
         <div className="flex-1 w-full lg:max-w-xl">
             <h3 className="text-xl font-bold text-gray-800 mb-4 pl-1">Data Pemesanan</h3>
             
@@ -204,7 +189,7 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
                 <button 
                     type="button" 
                     onClick={handleSubmit} 
-                    disabled={isSubmitting} // Disable kalau lagi loading
+                    disabled={isSubmitting} 
                     className={`w-full text-white font-bold py-4 rounded-xl shadow-md transition transform text-lg mt-8 flex justify-center items-center gap-2 ${
                         isSubmitting 
                         ? 'bg-gray-400 cursor-not-allowed' 
