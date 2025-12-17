@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+const API_URL = 'https://backend-warungku.vercel.app';
 
 const TrackOrder = ({ onBack }) => {
   const [searchCode, setSearchCode] = useState('');
@@ -6,7 +7,6 @@ const TrackOrder = ({ onBack }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // FUNGSI CEK STATUS KE BACKEND
   const handleCheckStatus = async (e) => {
     e.preventDefault();
     if (!searchCode) return;
@@ -16,15 +16,12 @@ const TrackOrder = ({ onBack }) => {
     setOrderResult(null);
     
     try {
-        // Tembak API Backend
-        const response = await fetch(`http://localhost:5000/api/orders/${searchCode}`);
+        const response = await fetch(`${API_URL}/api/orders/${searchCode}`);
         const data = await response.json();
 
         if (response.ok) {
-            // Jika ketemu, simpan datanya
             setOrderResult(data);
         } else {
-            // Jika 404 atau error lain
             setErrorMsg(data.message || 'Pesanan tidak ditemukan');
         }
     } catch (err) {
@@ -35,7 +32,6 @@ const TrackOrder = ({ onBack }) => {
     }
   };
   
-  // Fungsi helper untuk memformat tanggal
   const formatOrderDate = (timestamp) => {
       if (!timestamp) return 'Tanggal tidak diketahui';
       const date = new Date(timestamp);
@@ -49,7 +45,6 @@ const TrackOrder = ({ onBack }) => {
   return (
     <div className="min-h-screen bg-warung-bg font-sans pb-10 animate-fade-in">
       
-      {/* NAVBAR */}
       <nav className="bg-warung-navbar px-6 py-4 flex justify-between items-center shadow-warung sticky top-0 z-50">
         <div className="bg-white px-3 py-1 rounded shadow-sm">
            <h1 className="text-warung-navbar font-bold text-xl tracking-widest leading-none">WARUNGKU</h1>
@@ -59,7 +54,6 @@ const TrackOrder = ({ onBack }) => {
         </button>
       </nav>
 
-      {/* HEADER */}
       <div className="bg-warung-shadow-color px-6 py-8 shadow-md text-center md:text-left">
         <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Lacak Pesanan Anda</h2>
@@ -69,7 +63,6 @@ const TrackOrder = ({ onBack }) => {
 
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-8">
         
-        {/* FORM PENCARIAN */}
         <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-white/50 mb-8">
             <form onSubmit={handleCheckStatus}>
                 <label className="block text-gray-700 font-bold mb-3 pl-1">Masukkan Kode Transaksi (Contoh: WRG-xxxx)</label>
@@ -97,24 +90,20 @@ const TrackOrder = ({ onBack }) => {
                         )}
                     </button>
                 </div>
-                {/* Pesan Error */}
                 {errorMsg && (
                     <p className="text-red-600 font-bold mt-3 animate-pulse">❌ {errorMsg}</p>
                 )}
             </form>
         </div>
 
-        {/* HASIL PENCARIAN */}
         {orderResult && (
             <div className="bg-warung-kolom p-6 md:p-8 rounded-2xl shadow-xl border border-warung-shadow-color/20 animate-slide-up">
                 
-                {/* Header Hasil */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 pb-4 mb-6">
                     <div>
                         <p className="text-gray-500 text-sm font-bold uppercase tracking-wider">Kode Transaksi</p>
                         <h3 className="text-2xl font-bold text-warung-btn1 mb-1">{orderResult.id}</h3>
                         
-                        {/* TAMPILAN BARU: TANGGAL PESANAN */}
                         {orderResult.timeline && orderResult.timeline[0] && (
                            <p className="text-sm text-gray-600 font-medium">
                                Dipesan pada: <span className="font-bold">{formatOrderDate(orderResult.timeline[0].time)}</span>
@@ -127,7 +116,6 @@ const TrackOrder = ({ onBack }) => {
                     </div>
                 </div>
 
-                {/* Status Saat Ini */}
                 <div className={`border px-4 py-3 rounded-lg mb-8 flex items-center gap-3 ${
                     orderResult.status === 'Selesai' 
                     ? 'bg-green-100 border-green-200 text-green-800' 
@@ -144,7 +132,6 @@ const TrackOrder = ({ onBack }) => {
                     <span className="font-bold">Status: {orderResult.status}</span>
                 </div>
 
-                {/* Detail Item yang Dipesan */}
                 <div className="mb-8">
                     <p className="font-bold text-gray-700 mb-2">Menu Dipesan:</p>
                     <div className="bg-white p-4 rounded-xl border border-gray-200 text-gray-800 font-medium">
@@ -152,7 +139,6 @@ const TrackOrder = ({ onBack }) => {
                     </div>
                 </div>
 
-                {/* TIMELINE */}
                 <div className="relative pl-4 md:pl-8 space-y-8">
                     <div className="absolute left-[23px] md:left-[39px] top-2 bottom-4 w-0.5 bg-gray-300"></div>
 
