@@ -37,39 +37,34 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
     fetchMenu();
   }, []);
 
-  // PERBAIKAN: Fetch History & Filter yang Lebih Aman
+  // --- FETCH RIWAYAT DENGAN ENDPOINT BARU ---
   useEffect(() => {
     if (currentView === 'history') {
       const fetchHistory = async () => {
         setLoadingHistory(true);
         const token = localStorage.getItem('userToken');
         try {
-          const response = await fetch(`${API_URL}/api/orders`, {
+          // Panggil endpoint /history yang baru kita buat
+          const response = await fetch(`${API_URL}/api/orders/history`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           
           if (response.ok) {
-            const allOrders = await response.json();
-            
-            // Filter: Cocokkan nama (abaikan huruf besar/kecil)
-            // Jika userName kosong, tampilkan semua (opsional, tergantung keamanan)
-            const myOrders = allOrders.filter(order => 
-                order.customer_name?.toLowerCase() === userName?.toLowerCase()
-            );
-            
-            setHistoryOrders(myOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+            const myOrders = await response.json();
+            setHistoryOrders(myOrders);
           } else {
-            toast.error("Gagal memuat riwayat");
+            // Jika token expired atau error lain
+            toast.error("Gagal memuat riwayat. Coba login ulang.");
           }
         } catch (error) {
-          toast.error("Koneksi bermasalah");
+          toast.error("Koneksi ke server bermasalah");
         } finally {
           setLoadingHistory(false);
         }
       };
       fetchHistory();
     }
-  }, [currentView, userName]);
+  }, [currentView]);
 
   useEffect(() => {
     if (initialFilter) {
@@ -102,7 +97,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
 
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-  // --- TAMPILAN HALAMAN RIWAYAT (Warna & Layout Aman) ---
+  // --- TAMPILAN HALAMAN RIWAYAT (DESIGN WARUNGKU) ---
   const HistoryView = () => (
     <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 pb-24 animate-fade-in">
       
@@ -110,12 +105,12 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
         <div>
            <h2 className="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">Riwayat Pesanan</h2>
-           <p className="text-sm text-gray-500 mt-1 ml-4">Halo <span className="font-bold">{userName}</span>, ini daftar pesananmu.</p>
+           <p className="text-sm text-gray-500 mt-1 ml-4">Berikut daftar makanan yang pernah kamu pesan.</p>
         </div>
         
         <button 
             onClick={() => setCurrentView('menu')} 
-            className="w-full md:w-auto bg-red-600 text-white px-6 py-2.5 rounded-lg font-bold shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
+            className="w-full md:w-auto bg-red-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-red-700 transition flex items-center justify-center gap-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" /></svg>
           Kembali ke Menu
@@ -128,7 +123,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
         <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="text-6xl mb-4">🧾</div>
           <h3 className="text-lg font-bold text-gray-800">Belum ada riwayat</h3>
-          <p className="text-gray-500 text-sm mt-2 mb-6">Mungkin kamu belum memesan atau nama akun berbeda.</p>
+          <p className="text-gray-500 text-sm mt-2 mb-6">Yuk pesan makanan favoritmu sekarang!</p>
           <button 
             onClick={() => setCurrentView('menu')}
             className="bg-red-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-red-700 transition"
@@ -139,12 +134,12 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
       ) : (
         <div className="grid gap-4 md:gap-6">
           {historyOrders.map((order) => (
-            <div key={order.id} className="bg-white p-5 rounded-xl shadow-md border-l-4 border-red-600 hover:shadow-lg transition">
+            <div key={order.id} className="bg-white p-5 rounded-2xl shadow-md border-l-4 border-red-600 hover:shadow-lg transition">
               <div className="flex flex-col md:flex-row justify-between mb-4 gap-3">
                 <div>
                   <div className="flex items-center gap-2">
                      <span className="font-mono font-bold text-lg text-gray-800">#{order.transaction_code}</span>
-                     <span className={`px-2 py-1 rounded text-xs font-bold uppercase tracking-wide text-white ${
+                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide text-white ${
                         order.status === 'Selesai' ? 'bg-green-500' :
                         order.status === 'Sedang Dimasak' ? 'bg-orange-500' :
                         order.status === 'Dibatalkan' ? 'bg-red-500' :
@@ -153,7 +148,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                         {order.status}
                       </span>
                   </div>
-                  <span className="text-xs text-gray-500 block mt-1">
+                  <span className="text-xs text-gray-500 block mt-1 font-bold">
                     {new Date(order.created_at).toLocaleDateString('id-ID', {
                         day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
                     })}
@@ -164,14 +159,14 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                 {order.status !== 'Selesai' && order.status !== 'Dibatalkan' && (
                   <button 
                     onClick={() => setCurrentView('track')} 
-                    className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-black transition flex items-center justify-center gap-2"
+                    className="bg-gray-800 text-white px-5 py-2 rounded-xl text-sm font-bold shadow hover:bg-black transition flex items-center justify-center gap-2"
                   >
                     Cek Status &rarr;
                   </button>
                 )}
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700 mb-4 whitespace-pre-line border border-gray-100 font-medium">
+              <div className="bg-gray-50 p-4 rounded-xl text-sm text-gray-700 mb-4 whitespace-pre-line border border-gray-100 font-medium">
                 {order.menu_items}
               </div>
 
@@ -215,21 +210,20 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
       {/* NAVBAR MERAH SOLID (BRANDING WARUNGKU) */}
       <nav className="sticky top-0 z-40 bg-red-600 text-white shadow-lg px-4 md:px-8 py-4 flex justify-between items-center">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentView('menu')}>
-           <div className="bg-white text-red-600 w-9 h-9 rounded-lg flex items-center justify-center font-bold shadow-sm text-lg">WK</div>
-           <h1 className="font-bold text-xl tracking-wide">WARUNGKU</h1>
+           <div className="bg-white text-red-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-sm text-lg transform rotate-3">WK</div>
+           <h1 className="font-bold text-xl tracking-wide italic">WARUNGKU.</h1>
         </div>
 
-        {/* Menu Navigasi - Muncul di HP & Desktop */}
         <div className="flex items-center gap-2 md:gap-4 text-sm font-medium">
           <button 
             onClick={() => setCurrentView('history')} 
-            className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500 font-bold"
+            className="px-3 py-2 rounded-xl bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500 font-bold"
           >
             Riwayat
           </button>
           <button 
             onClick={() => setCurrentView('track')} 
-            className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500 font-bold"
+            className="px-3 py-2 rounded-xl bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500 font-bold"
           >
             Status
           </button>
@@ -243,7 +237,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           
           <button 
             onClick={onLogout} 
-            className="bg-white text-red-600 px-3 md:px-4 py-2 rounded-lg font-bold hover:bg-gray-100 transition shadow-sm"
+            className="bg-white text-red-600 px-4 py-2 rounded-xl font-bold hover:bg-gray-100 transition shadow-sm"
           >
             Keluar
           </button>
