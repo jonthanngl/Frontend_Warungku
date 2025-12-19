@@ -37,6 +37,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
     fetchMenu();
   }, []);
 
+  // PERBAIKAN: Fetch History & Filter yang Lebih Aman
   useEffect(() => {
     if (currentView === 'history') {
       const fetchHistory = async () => {
@@ -46,9 +47,16 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           const response = await fetch(`${API_URL}/api/orders`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
+          
           if (response.ok) {
             const allOrders = await response.json();
-            const myOrders = allOrders.filter(order => order.customer_name === userName);
+            
+            // Filter: Cocokkan nama (abaikan huruf besar/kecil)
+            // Jika userName kosong, tampilkan semua (opsional, tergantung keamanan)
+            const myOrders = allOrders.filter(order => 
+                order.customer_name?.toLowerCase() === userName?.toLowerCase()
+            );
+            
             setHistoryOrders(myOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
           } else {
             toast.error("Gagal memuat riwayat");
@@ -94,12 +102,17 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
 
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-  // --- TAMPILAN HALAMAN RIWAYAT (Desain Card) ---
+  // --- TAMPILAN HALAMAN RIWAYAT (Warna & Layout Aman) ---
   const HistoryView = () => (
     <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 pb-24 animate-fade-in">
+      
       {/* Header dengan Tombol Kembali Merah Solid */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">Riwayat Pesanan</h2>
+        <div>
+           <h2 className="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">Riwayat Pesanan</h2>
+           <p className="text-sm text-gray-500 mt-1 ml-4">Halo <span className="font-bold">{userName}</span>, ini daftar pesananmu.</p>
+        </div>
+        
         <button 
             onClick={() => setCurrentView('menu')} 
             className="w-full md:w-auto bg-red-600 text-white px-6 py-2.5 rounded-lg font-bold shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
@@ -115,7 +128,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
         <div className="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="text-6xl mb-4">🧾</div>
           <h3 className="text-lg font-bold text-gray-800">Belum ada riwayat</h3>
-          <p className="text-gray-500 text-sm mt-2 mb-6">Yuk pesan makanan favoritmu sekarang!</p>
+          <p className="text-gray-500 text-sm mt-2 mb-6">Mungkin kamu belum memesan atau nama akun berbeda.</p>
           <button 
             onClick={() => setCurrentView('menu')}
             className="bg-red-600 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-red-700 transition"
@@ -206,16 +219,17 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
            <h1 className="font-bold text-xl tracking-wide">WARUNGKU</h1>
         </div>
 
+        {/* Menu Navigasi - Muncul di HP & Desktop */}
         <div className="flex items-center gap-2 md:gap-4 text-sm font-medium">
           <button 
             onClick={() => setCurrentView('history')} 
-            className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500"
+            className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500 font-bold"
           >
             Riwayat
           </button>
           <button 
             onClick={() => setCurrentView('track')} 
-            className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500"
+            className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500 font-bold"
           >
             Status
           </button>
@@ -229,7 +243,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           
           <button 
             onClick={onLogout} 
-            className="bg-white text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-100 transition shadow-sm"
+            className="bg-white text-red-600 px-3 md:px-4 py-2 rounded-lg font-bold hover:bg-gray-100 transition shadow-sm"
           >
             Keluar
           </button>
