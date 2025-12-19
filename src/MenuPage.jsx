@@ -100,7 +100,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
         </div>
 
         <div className="flex items-center gap-2 md:gap-4 text-sm font-medium">
-          {/* Tombol Status (Tanpa Riwayat) */}
+          {/* Tombol Status */}
           <button 
             onClick={() => setCurrentView('track')} 
             className="px-3 py-2 rounded-xl bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500 font-bold"
@@ -196,27 +196,27 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
         )}
       </main>
 
-      {/* KERANJANG MELAYANG (Desain Awal) */}
+      {/* KERANJANG MELAYANG (UKURAN DIPERBESAR) */}
       {cart.length > 0 && (
         <div className="fixed bottom-6 inset-x-0 flex justify-center z-50 px-4 animate-bounce-in">
           <button 
             onClick={() => setCurrentView('cart')}
-            className="bg-gray-900 text-white w-full max-w-md px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-4 hover:scale-[1.02] transition-transform cursor-pointer border-2 border-white/10"
+            className="bg-gray-900 text-white w-full max-w-lg px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-5 hover:scale-[1.02] transition-transform cursor-pointer border-2 border-white/10"
           >
-            {/* Icon Keranjang Merah */}
-            <div className="bg-red-600 w-12 h-12 rounded-xl flex items-center justify-center shadow-lg relative shrink-0">
-               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-               <span className="absolute -top-2 -right-2 bg-white text-red-600 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-red-600">
+            {/* Icon Keranjang Merah (Lebih Besar) */}
+            <div className="bg-red-600 w-14 h-14 rounded-xl flex items-center justify-center shadow-lg relative shrink-0">
+               <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+               <span className="absolute -top-2 -right-2 bg-white text-red-600 text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-red-600">
                  {cart.reduce((a,b) => a + b.qty, 0)}
                </span>
             </div>
             
             <div className="flex-1 text-left">
-               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total Pembayaran</p>
-               <p className="text-lg font-bold">Rp {totalPrice.toLocaleString('id-ID')}</p>
+               <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">Total Pembayaran</p>
+               <p className="text-xl font-bold">Rp {totalPrice.toLocaleString('id-ID')}</p>
             </div>
             
-            <div className="text-sm font-bold bg-white/10 px-3 py-2 rounded-lg hover:bg-white/20 transition">
+            <div className="text-base font-bold bg-white/10 px-5 py-3 rounded-xl hover:bg-white/20 transition">
                Lihat &rarr;
             </div>
           </button>
