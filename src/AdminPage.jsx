@@ -313,20 +313,7 @@ const AdminPage = ({ onLogout, adminName }) => {
                 </h2>
             </div>
             
-            {/* --- MODIFIKASI: Profil Logo sekarang berfungsi sebagai Logout --- */}
-            <div 
-                className="flex items-center gap-3 cursor-pointer hover:bg-red-50 p-2 rounded-lg transition group"
-                onClick={onLogout}
-                title="Klik untuk Keluar"
-            >
-                <div className="text-right hidden md:block">
-                    <div className="font-bold text-gray-800 text-sm md:text-base">{adminName || 'Admin'}</div>
-                    <div className="text-xs text-gray-500 group-hover:text-red-600 transition">Klik untuk Keluar</div>
-                </div>
-                <div className="bg-warung-btn1 group-hover:bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition transform group-hover:scale-105">
-                    👤
-                </div>
-            </div>
+            {/* BAGIAN PROFIL SUDAH DIHAPUS */}
         </header>
         
         {activeMenu === 'dashboard' && <DashboardView />}
