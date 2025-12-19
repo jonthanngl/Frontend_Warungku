@@ -58,11 +58,6 @@ const LandingPage = ({ onLoginAttempt, onRegisterAttempt }) => {
             >
               Pesan Sekarang
             </button>
-            <button 
-              className="bg-white/5 backdrop-blur-lg text-white border border-white/10 px-10 py-5 rounded-3xl font-bold text-lg hover:bg-white/10 transition-all"
-            >
-              Lihat Menu
-            </button>
           </div>
         </div>
       </main>
@@ -80,3 +75,4 @@ const LandingPage = ({ onLoginAttempt, onRegisterAttempt }) => {
 };
 
 export default LandingPage;
+
