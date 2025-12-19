@@ -16,13 +16,12 @@ const InputField = ({ label, type, placeholder, icon, value, onChange }) => (
     </label>
     <input 
       type={type} placeholder={placeholder} value={value} onChange={onChange} 
-      className="w-full px-4 py-3 rounded-md bg-white border border-gray-200 focus:border-warung-btn1 focus:ring-1 focus:ring-warung-btn1 focus:outline-none transition shadow-sm"
+      className="w-full px-4 py-3 rounded-md bg-white border border-gray-200 focus:border-red-600 focus:ring-1 focus:ring-red-600 focus:outline-none transition shadow-sm"
       required
     />
   </div>
 );
 
-// TERIMA PROP: onRegisterSubmit
 const LoginModal = ({ onClose, initialTab = 'masuk', onLoginSubmit, onRegisterSubmit }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
   
@@ -62,11 +61,22 @@ const LoginModal = ({ onClose, initialTab = 'masuk', onLoginSubmit, onRegisterSu
       <div className="w-full max-w-lg flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
         
         <div className="bg-white w-full p-8 rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-warung-btn1 transition">{Icons.close}</button>
+          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-red-600 transition">{Icons.close}</button>
 
+          {/* --- PERBAIKAN DI SINI (Warna Tombol diganti ke bg-red-600) --- */}
           <div className="flex gap-4 mb-6 mt-2">
-            <button onClick={() => setActiveTab('masuk')} className={`flex-1 py-3 text-xl font-bold rounded-lg transition-all shadow-sm ${activeTab === 'masuk' ? 'bg-warung-btn1 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>Masuk</button>
-            <button onClick={() => setActiveTab('daftar')} className={`flex-1 py-3 text-xl font-bold rounded-lg transition-all shadow-sm ${activeTab === 'daftar' ? 'bg-warung-btn1 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-50'}`}>Daftar</button>
+            <button 
+                onClick={() => setActiveTab('masuk')} 
+                className={`flex-1 py-3 text-xl font-bold rounded-lg transition-all shadow-sm ${activeTab === 'masuk' ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            >
+                Masuk
+            </button>
+            <button 
+                onClick={() => setActiveTab('daftar')} 
+                className={`flex-1 py-3 text-xl font-bold rounded-lg transition-all shadow-sm ${activeTab === 'daftar' ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            >
+                Daftar
+            </button>
           </div>
 
           <form className="space-y-2" onSubmit={handleSubmit}>
@@ -86,7 +96,7 @@ const LoginModal = ({ onClose, initialTab = 'masuk', onLoginSubmit, onRegisterSu
             )}
 
             <div className="mt-8 space-y-4 text-center">
-              <button className="w-full bg-warung-btn1 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-md transition transform hover:scale-[1.01] text-xl">
+              <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg shadow-md transition transform hover:scale-[1.01] text-xl">
                 {activeTab === 'masuk' ? 'Masuk' : 'Daftar Sekarang'}
               </button>
             </div>
