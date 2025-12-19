@@ -7,16 +7,29 @@ export default {
   theme: {
     extend: {
       colors: {
-        'warung-bg': '#D2B48C',       // Background Utama
-        'warung-navbar': '#8B4513',   // Navbar
-        'warung-btn1': '#C0392B',     // Tombol Merah
-        'warung-btn2': '#178538',     // Tombol Hijau
-        'warung-kolom': '#F2F5E6',    // Kartu Menu
-        'warung-shadow-color': '#C27B48', // Warna Bayangan (disimpan sbg variabel juga)
+        // Palet warna baru yang lebih elegan
+        'warung-primary': '#8B4513',    // Cokelat Branding
+        'warung-secondary': '#FDF8F2',  // Krem Background (Soft)
+        'warung-accent': '#178538',     // Hijau Segar
+        'warung-danger': '#C0392B',     // Merah Aksen
+        'warung-dark': '#2D1B0D',       // Cokelat sangat tua untuk teks
       },
-      // INI DIA YANG KITA TAMBAH: Bayangan khusus warna #C27B48
+      fontFamily: {
+        // Gunakan font Inter atau Sans umum yang terlihat bersih
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
       boxShadow: {
-        'warung': '0 15px 30px -5px #C27B48', 
+        'premium': '0 20px 50px rgba(139, 69, 19, 0.1)',
+        'card-hover': '0 30px 60px rgba(0, 0, 0, 0.12)',
+      },
+      animation: {
+        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+      },
+      keyframes: {
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        }
       }
     },
   },
