@@ -51,7 +51,6 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           
           if (response.ok) {
             const allOrders = await response.json();
-            // Filter pesanan sesuai user yang login
             const myOrders = allOrders.filter(order => order.customer_name === userName);
             setHistoryOrders(myOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
           } else {
@@ -67,7 +66,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
     }
   }, [currentView, userName]);
 
-  // Handle Filter dari Landing Page
+  // Handle Filter
   useEffect(() => {
     if (initialFilter) {
       if (initialFilter === 'pedas') setSearchTerm('pedas');
@@ -100,62 +99,79 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
 
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-  // --- TAMPILAN HALAMAN RIWAYAT ---
+  // --- TAMPILAN HALAMAN RIWAYAT (DIPERBAIKI TOMBOLNYA) ---
   const HistoryView = () => (
     <div className="max-w-4xl mx-auto px-6 py-8 animate-fade-in">
-      <div className="flex items-center gap-4 mb-8 border-b pb-4">
-        <button onClick={() => setCurrentView('menu')} className="font-bold text-gray-500 hover:text-red-600 transition">
+      
+      {/* Tombol KEMBALI KE MENU yang Jelas */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b pb-4">
+        <h2 className="text-2xl font-bold text-gray-800">Riwayat Pesanan Anda</h2>
+        
+        {/* BUTTON: Merah Solid agar terlihat jelas */}
+        <button 
+            onClick={() => setCurrentView('menu')} 
+            className="bg-red-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
+        >
           &larr; Kembali ke Menu
         </button>
-        <h2 className="text-2xl font-bold text-gray-800">Riwayat Pesanan Anda</h2>
       </div>
 
       {loadingHistory ? (
-        <div className="text-center py-10 text-gray-400">Sedang memuat data...</div>
+        <div className="text-center py-10 text-gray-500 font-medium">Sedang memuat data...</div>
       ) : historyOrders.length === 0 ? (
-        <div className="text-center py-10 bg-white rounded-xl border border-dashed border-gray-300">
+        <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300 shadow-sm">
           <h3 className="text-lg font-bold text-gray-800">Belum ada riwayat pesanan</h3>
-          <p className="text-gray-500 text-sm mt-1">Pesanan yang kamu buat akan muncul di sini.</p>
+          <p className="text-gray-500 text-sm mt-2 mb-6">Pesanan yang kamu buat akan muncul di sini.</p>
+          <button 
+            onClick={() => setCurrentView('menu')}
+            className="bg-slate-800 text-white px-6 py-3 rounded-lg font-bold hover:bg-black transition"
+          >
+            Pesan Sekarang
+          </button>
         </div>
       ) : (
         <div className="space-y-6">
           {historyOrders.map((order) => (
-            <div key={order.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-              <div className="flex flex-col md:flex-row justify-between mb-4 gap-2">
+            <div key={order.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
+              <div className="flex flex-col md:flex-row justify-between mb-4 gap-3">
                 <div>
-                  <span className="font-bold text-red-600">#{order.transaction_code}</span>
-                  <span className="mx-2 text-gray-300">|</span>
-                  <span className="text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                     <span className="font-mono font-bold text-lg text-slate-800">#{order.transaction_code}</span>
+                     <span className={`px-3 py-1 rounded text-xs font-bold uppercase ${
+                        order.status === 'Selesai' ? 'bg-green-100 text-green-700' :
+                        order.status === 'Sedang Dimasak' ? 'bg-orange-100 text-orange-700' :
+                        order.status === 'Dibatalkan' ? 'bg-red-100 text-red-700' :
+                        'bg-yellow-100 text-yellow-700'
+                      }`}>
+                        {order.status}
+                      </span>
+                  </div>
+                  <span className="text-xs text-gray-500 block mt-1">
                     {new Date(order.created_at).toLocaleDateString('id-ID', {
                         day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
                     })}
                   </span>
                 </div>
-                <div>
-                  <span className={`px-3 py-1 rounded text-xs font-bold ${
-                    order.status === 'Selesai' ? 'bg-green-100 text-green-700' :
-                    order.status === 'Sedang Dimasak' ? 'bg-orange-100 text-orange-700' :
-                    order.status === 'Dibatalkan' ? 'bg-red-100 text-red-700' :
-                    'bg-yellow-100 text-yellow-700'
-                  }`}>
-                    {order.status}
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700 mb-4 whitespace-pre-line leading-relaxed">
-                {order.menu_items}
-              </div>
-
-              <div className="flex justify-between items-center border-t pt-3">
-                <div className="text-sm">
-                  Total Bayar: <span className="font-bold text-lg">Rp {parseInt(order.total_price).toLocaleString('id-ID')}</span>
-                </div>
+                
+                {/* BUTTON: Lihat Status (Solid Hitam) */}
                 {order.status !== 'Selesai' && order.status !== 'Dibatalkan' && (
-                  <button onClick={() => setCurrentView('track')} className="text-sm font-bold text-blue-600 hover:underline">
+                  <button 
+                    onClick={() => setCurrentView('track')} 
+                    className="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-black transition flex items-center gap-2 self-start md:self-center"
+                  >
                     Lihat Status &rarr;
                   </button>
                 )}
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700 mb-4 whitespace-pre-line leading-relaxed border border-gray-100">
+                <span className="font-bold text-gray-500 text-xs uppercase block mb-2">Menu Dipesan:</span>
+                {order.menu_items}
+              </div>
+
+              <div className="flex justify-between items-center border-t pt-3 mt-2">
+                <span className="text-gray-500 text-sm">Total Pembayaran</span>
+                <span className="font-bold text-lg text-red-600">Rp {parseInt(order.total_price).toLocaleString('id-ID')}</span>
               </div>
             </div>
           ))}
@@ -190,28 +206,39 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
       
-      {/* NAVBAR: Text Only, Clean */}
+      {/* NAVBAR */}
       <nav className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 md:px-8 py-4 flex justify-between items-center shadow-sm">
-        <div>
-          <h1 className="font-bold text-xl tracking-wide text-red-600">WARUNGKU</h1>
+        <div className="flex items-center gap-2" onClick={() => setCurrentView('menu')}>
+           <div className="bg-red-600 w-8 h-8 rounded flex items-center justify-center text-white font-bold cursor-pointer">W</div>
+           <h1 className="font-bold text-xl tracking-wide text-gray-800 cursor-pointer">WARUNGKU</h1>
         </div>
 
-        <div className="flex items-center gap-4 md:gap-6 text-sm font-medium">
-          <button onClick={() => setCurrentView('history')} className="text-gray-600 hover:text-red-600 transition">
+        <div className="flex items-center gap-3 md:gap-6 text-sm font-medium">
+          {/* Tombol Navigasi dibuat lebih 'Button-like' */}
+          <button 
+            onClick={() => setCurrentView('history')} 
+            className="px-3 py-1.5 rounded-md hover:bg-gray-100 text-gray-600 hover:text-red-600 transition"
+          >
             Riwayat
           </button>
-          <button onClick={() => setCurrentView('track')} className="text-gray-600 hover:text-red-600 transition">
-            Status
+          <button 
+            onClick={() => setCurrentView('track')} 
+            className="px-3 py-1.5 rounded-md hover:bg-gray-100 text-gray-600 hover:text-red-600 transition"
+          >
+            Cek Status
           </button>
           
-          <div className="h-4 w-px bg-gray-300 hidden sm:block"></div>
+          <div className="h-5 w-px bg-gray-300 hidden sm:block"></div>
           
           <div className="hidden sm:flex flex-col text-right">
              <span className="text-xs text-gray-400">Halo,</span>
              <span className="font-bold leading-none">{userName || 'Pelanggan'}</span>
           </div>
           
-          <button onClick={onLogout} className="text-red-500 hover:text-red-700 font-bold ml-2">
+          <button 
+            onClick={onLogout} 
+            className="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-600 hover:text-white transition"
+          >
             Keluar
           </button>
         </div>
@@ -225,13 +252,13 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           
           {/* Banner Filter */}
           {initialFilter && (searchTerm !== '' || activeCategory !== 'Semua') && (
-            <div className="mt-4 bg-gray-800 text-white p-3 rounded-lg flex justify-between items-center text-sm">
+            <div className="mt-4 bg-slate-900 text-white p-3 rounded-lg flex justify-between items-center text-sm shadow-md">
               <span>Filter: <b>{initialFilter}</b></span>
               <button 
                 onClick={() => {setSearchTerm(''); setActiveCategory('Semua');}}
-                className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition"
+                className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition text-xs font-bold"
               >
-                Reset
+                Reset Filter
               </button>
             </div>
           )}
@@ -242,7 +269,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
               type="text" 
               value={searchTerm}
               placeholder="Cari menu..." 
-              className="flex-1 px-4 py-3 rounded-lg bg-white border border-gray-300 focus:border-red-500 focus:outline-none"
+              className="flex-1 px-4 py-3 rounded-lg bg-white border border-gray-300 focus:border-red-500 focus:outline-none shadow-sm"
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             
@@ -251,7 +278,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-3 rounded-lg font-bold text-sm whitespace-nowrap border transition ${
+                  className={`px-5 py-3 rounded-lg font-bold text-sm whitespace-nowrap border transition shadow-sm ${
                     activeCategory === cat 
                     ? 'bg-red-600 text-white border-red-600' 
                     : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
@@ -274,27 +301,27 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
+          <div className="text-center py-20 bg-white rounded-xl border border-gray-200 shadow-sm">
             <h3 className="font-bold text-gray-800">Menu tidak ditemukan</h3>
-            <button onClick={() => {setSearchTerm(''); setActiveCategory('Semua');}} className="mt-2 text-red-600 hover:underline text-sm">
+            <button onClick={() => {setSearchTerm(''); setActiveCategory('Semua');}} className="mt-3 text-red-600 font-bold hover:underline text-sm">
               Lihat semua menu
             </button>
           </div>
         )}
       </main>
 
-      {/* Keranjang Melayang (Text Only) */}
+      {/* Keranjang Melayang */}
       {cart.length > 0 && (
-        <div className="fixed bottom-6 inset-x-0 flex justify-center z-50 px-4">
+        <div className="fixed bottom-6 inset-x-0 flex justify-center z-50 px-4 animate-slide-up">
           <button 
             onClick={() => setCurrentView('cart')}
-            className="bg-gray-900 text-white w-full max-w-md px-6 py-4 rounded-xl shadow-2xl flex justify-between items-center hover:bg-black transition"
+            className="bg-slate-900 text-white w-full max-w-md px-6 py-4 rounded-xl shadow-2xl flex justify-between items-center hover:scale-[1.02] transition transform cursor-pointer border border-slate-700"
           >
             <div className="text-left">
-               <span className="block text-xs text-gray-400 uppercase font-bold">Total ({cart.reduce((a,b) => a + b.qty, 0)} Item)</span>
-               <span className="font-bold text-lg">Rp {totalPrice.toLocaleString('id-ID')}</span>
+               <span className="block text-[10px] text-gray-400 uppercase font-bold tracking-wider">Total ({cart.reduce((a,b) => a + b.qty, 0)} Item)</span>
+               <span className="font-bold text-lg text-white">Rp {totalPrice.toLocaleString('id-ID')}</span>
             </div>
-            <div className="font-bold text-sm bg-white text-black px-4 py-2 rounded-lg">
+            <div className="font-bold text-xs bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700">
                Lihat Keranjang &rarr;
             </div>
           </button>
