@@ -30,13 +30,6 @@ const AdminPage = ({ onLogout, adminName }) => {
     name: '', category: 'Makanan', price: '', description: '', image: null
   });
 
-  // --- NEW STATE: EDIT PROFILE ---
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [profileData, setProfileData] = useState({ 
-    name: adminName || '', 
-    phone: '' 
-  });
-
   const fetchData = async () => {
     setLoading(true);
     const authHeaders = getAuthHeaders(); 
@@ -93,38 +86,6 @@ const AdminPage = ({ onLogout, adminName }) => {
       fetchData(); 
       fetchSalesData(); 
   }, []);
-
-  // --- NEW FUNCTION: UPDATE PROFILE ---
-  const handleUpdateProfile = async (e) => {
-    e.preventDefault();
-    const loadingToast = toast.loading('Menyimpan profil...');
-    const authHeaders = getAuthHeaders();
-    
-    try {
-        // Ganti URL endpoint sesuai API update profil kamu
-        const response = await fetch(`${API_URL}/api/auth/update`, {
-            method: 'PUT',
-            headers: authHeaders,
-            body: JSON.stringify({
-                name: profileData.name,
-                phone: profileData.phone
-            })
-        });
-
-        toast.dismiss(loadingToast);
-
-        if (response.ok) {
-            toast.success("Profil berhasil diperbarui!");
-            setShowProfileModal(false);
-            // Optional: window.location.reload() jika ingin refresh
-        } else {
-            toast.error("Gagal memperbarui profil.");
-        }
-    } catch (error) {
-        toast.dismiss(loadingToast);
-        toast.error("Terjadi kesalahan koneksi.");
-    }
-  };
 
   const handleAddItem = async (e) => {
     e.preventDefault();
@@ -352,17 +313,17 @@ const AdminPage = ({ onLogout, adminName }) => {
                 </h2>
             </div>
             
-            {/* --- PERBAIKAN DI SINI: Profil bisa diklik untuk edit --- */}
+            {/* --- MODIFIKASI: Profil Logo sekarang berfungsi sebagai Logout --- */}
             <div 
-                className="flex items-center gap-3 cursor-pointer hover:bg-gray-200 p-2 rounded-lg transition"
-                onClick={() => setShowProfileModal(true)}
-                title="Klik untuk edit profil"
+                className="flex items-center gap-3 cursor-pointer hover:bg-red-50 p-2 rounded-lg transition group"
+                onClick={onLogout}
+                title="Klik untuk Keluar"
             >
                 <div className="text-right hidden md:block">
                     <div className="font-bold text-gray-800 text-sm md:text-base">{adminName || 'Admin'}</div>
-                    <div className="text-xs text-gray-500">Edit Profil</div>
+                    <div className="text-xs text-gray-500 group-hover:text-red-600 transition">Klik untuk Keluar</div>
                 </div>
-                <div className="bg-warung-btn1 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md">
+                <div className="bg-warung-btn1 group-hover:bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md transition transform group-hover:scale-105">
                     👤
                 </div>
             </div>
@@ -519,51 +480,6 @@ const AdminPage = ({ onLogout, adminName }) => {
                 )}
               </>
             )
-        )}
-        
-        {/* --- MODAL EDIT PROFIL --- */}
-        {showProfileModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 animate-fade-in">
-                <div className="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md relative">
-                    <button onClick={() => setShowProfileModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500">✕</button>
-                    
-                    <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">Edit Profil</h3>
-                    
-                    <form onSubmit={handleUpdateProfile} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Nama Lengkap</label>
-                            <input 
-                                type="text" 
-                                value={profileData.name} 
-                                onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none"
-                                placeholder="Nama Anda"
-                                required
-                            />
-                        </div>
-                        
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Nomor Telepon</label>
-                            <input 
-                                type="tel" 
-                                value={profileData.phone} 
-                                onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none"
-                                placeholder="Contoh: 08123456789"
-                            />
-                        </div>
-
-                        <div className="flex gap-3 mt-6">
-                            <button type="button" onClick={() => setShowProfileModal(false)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition">
-                                Batal
-                            </button>
-                            <button type="submit" className="flex-1 py-2.5 bg-warung-btn1 text-white font-bold rounded-xl hover:bg-red-700 shadow-lg transition">
-                                Simpan
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
         )}
       </main>
     </div>
