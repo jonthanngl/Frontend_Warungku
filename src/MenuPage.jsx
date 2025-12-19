@@ -94,20 +94,20 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
 
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-  // --- TAMPILAN HALAMAN RIWAYAT ---
+  // --- TAMPILAN HALAMAN RIWAYAT (Desain Kembali seperti Semula tapi Jelas) ---
   const HistoryView = () => (
     <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 animate-fade-in">
       
       {/* HEADER + TOMBOL KEMBALI */}
-      <div className="flex flex-col gap-4 mb-6 border-b border-gray-200 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-gray-200 pb-4">
         <h2 className="text-xl md:text-2xl font-bold text-gray-800">Riwayat Pesanan</h2>
         
-        {/* Tombol Merah Solid - Full Width di HP */}
+        {/* Tombol Teks dengan Warna Jelas (Merah) */}
         <button 
             onClick={() => setCurrentView('menu')} 
-            className="w-full md:w-auto bg-red-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
+            className="text-red-600 hover:text-red-800 font-bold flex items-center gap-2 text-sm md:text-base transition group"
         >
-          &larr; Kembali ke Menu
+          <span className="group-hover:-translate-x-1 transition-transform">&larr;</span> Kembali ke Menu
         </button>
       </div>
 
@@ -119,24 +119,24 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           <p className="text-gray-500 text-sm mt-2 mb-6 px-4">Pesanan yang kamu buat akan muncul di sini.</p>
           <button 
             onClick={() => setCurrentView('menu')}
-            className="bg-slate-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-black transition"
+            className="text-red-600 font-bold hover:underline"
           >
-            Pesan Sekarang
+            Mulai Pesan Sekarang
           </button>
         </div>
       ) : (
         <div className="space-y-4 md:space-y-6 pb-20">
           {historyOrders.map((order) => (
-            <div key={order.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
+            <div key={order.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:border-red-100 transition">
               <div className="flex flex-col md:flex-row justify-between mb-4 gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                      <span className="font-mono font-bold text-base md:text-lg text-slate-800">#{order.transaction_code}</span>
                      <span className={`px-2 py-1 rounded text-[10px] md:text-xs font-bold uppercase tracking-wide ${
-                        order.status === 'Selesai' ? 'bg-green-100 text-green-700' :
-                        order.status === 'Sedang Dimasak' ? 'bg-orange-100 text-orange-700' :
-                        order.status === 'Dibatalkan' ? 'bg-red-100 text-red-700' :
-                        'bg-yellow-100 text-yellow-700'
+                        order.status === 'Selesai' ? 'bg-green-50 text-green-700 border border-green-100' :
+                        order.status === 'Sedang Dimasak' ? 'bg-orange-50 text-orange-700 border border-orange-100' :
+                        order.status === 'Dibatalkan' ? 'bg-red-50 text-red-700 border border-red-100' :
+                        'bg-yellow-50 text-yellow-700 border border-yellow-100'
                       }`}>
                         {order.status}
                       </span>
@@ -148,11 +148,11 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                   </span>
                 </div>
                 
-                {/* TOMBOL LIHAT STATUS (Hitam Solid) */}
+                {/* Tombol Lihat Status (Teks Link Biru) */}
                 {order.status !== 'Selesai' && order.status !== 'Dibatalkan' && (
                   <button 
                     onClick={() => setCurrentView('track')} 
-                    className="w-full md:w-auto bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-black transition text-center"
+                    className="text-blue-600 hover:text-blue-800 text-sm font-bold flex items-center gap-1 self-start md:self-center"
                   >
                     Lihat Status &rarr;
                   </button>
@@ -202,32 +202,32 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
     <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
       
       {/* NAVBAR */}
-      <nav className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-3 md:py-4 flex flex-wrap justify-between items-center shadow-sm gap-2">
+      <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-gray-200 px-4 py-3 md:py-4 flex flex-wrap justify-between items-center shadow-sm">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentView('menu')}>
-           <div className="bg-red-600 w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold shadow-sm">W</div>
-           <h1 className="font-bold text-lg md:text-xl tracking-wide text-gray-800">WARUNGKU</h1>
+           <div className="bg-red-600 text-white p-1 rounded font-bold text-sm">WK</div>
+           <h1 className="font-bold text-lg tracking-wide text-gray-800">WARUNGKU</h1>
         </div>
 
-        {/* Navigation Buttons - TAMPIL DI SEMUA LAYAR */}
-        <div className="flex items-center gap-2 md:gap-3 text-xs md:text-sm font-medium ml-auto">
+        {/* Menu Navigasi - Teks Saja tapi Jelas & Muncul di HP */}
+        <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm font-medium ml-auto">
           <button 
             onClick={() => setCurrentView('history')} 
-            className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition font-bold"
+            className="text-gray-600 hover:text-red-600 transition"
           >
             Riwayat
           </button>
           <button 
             onClick={() => setCurrentView('track')} 
-            className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition font-bold"
+            className="text-gray-600 hover:text-red-600 transition"
           >
             Status
           </button>
           
-          <div className="h-6 w-px bg-gray-300 mx-1 hidden sm:block"></div>
+          <div className="h-4 w-px bg-gray-300 mx-1 hidden sm:block"></div>
           
           <button 
             onClick={onLogout} 
-            className="bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold hover:bg-red-600 hover:text-white transition"
+            className="text-red-600 hover:text-red-800 font-bold"
           >
             Keluar
           </button>
@@ -244,7 +244,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
               <span>Filter: <b>{initialFilter}</b></span>
               <button 
                 onClick={() => {setSearchTerm(''); setActiveCategory('Semua');}}
-                className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition font-bold"
+                className="text-white/80 hover:text-white font-bold underline"
               >
                 Reset
               </button>
@@ -265,7 +265,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-4 py-2 md:px-5 md:py-3 rounded-lg font-bold text-xs md:text-sm whitespace-nowrap border transition shadow-sm ${
+                  className={`px-4 py-2 md:px-5 md:py-3 rounded-lg font-bold text-xs md:text-sm whitespace-nowrap border transition ${
                     activeCategory === cat 
                     ? 'bg-red-600 text-white border-red-600' 
                     : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
@@ -296,7 +296,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
         )}
       </main>
 
-      {/* KERANJANG MELAYANG */}
+      {/* Keranjang (Tetap Modern karena Penting) */}
       {cart.length > 0 && (
         <div className="fixed bottom-6 inset-x-0 flex justify-center z-50 px-4 animate-slide-up">
           <button 
