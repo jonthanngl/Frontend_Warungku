@@ -15,6 +15,7 @@ const TrackOrder = ({ onBack }) => {
     setOrderStatus(null);
 
     try {
+      // Pastikan URL ini cocok dengan backend baru: /api/orders/track/:code
       const response = await fetch(`${API_URL}/api/orders/track/${code}`);
       const data = await response.json();
 
@@ -82,15 +83,15 @@ const TrackOrder = ({ onBack }) => {
             <div className="space-y-3 text-sm text-gray-600 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
               <div className="flex justify-between">
                 <span>Pemesan:</span>
-                <span className="font-bold text-gray-800">{orderStatus.customer_name}</span>
+                <span className="font-bold text-gray-800">{orderStatus.customer}</span>
               </div>
               <div className="flex justify-between">
                 <span>Total:</span>
-                <span className="font-bold text-gray-800">Rp {parseInt(orderStatus.total_price).toLocaleString('id-ID')}</span>
+                <span className="font-bold text-gray-800">Rp {parseInt(orderStatus.total_price || 0).toLocaleString('id-ID')}</span>
               </div>
               <div className="border-t border-gray-100 pt-2 mt-2">
                  <p className="text-xs text-gray-400 mb-1">Menu:</p>
-                 <p className="font-medium text-gray-800 whitespace-pre-line leading-relaxed">{orderStatus.menu_items}</p>
+                 <p className="font-medium text-gray-800 whitespace-pre-line leading-relaxed">{orderStatus.items}</p>
               </div>
             </div>
           </div>
