@@ -57,17 +57,11 @@ const LandingPage = ({ onLoginAttempt, onRegisterAttempt }) => {
           
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <button 
-              onClick={() => openModal('daftar')}
+              onClick={() => openModal('masuk')}
               className="group bg-red-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-700 transition-all shadow-lg shadow-red-900/20 flex items-center justify-center gap-2"
             >
               Pesan Sekarang
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-            </button>
-            <button 
-               onClick={() => openModal('masuk')}
-              className="group px-8 py-4 rounded-xl font-bold text-lg text-white border border-white/20 hover:bg-white/10 transition-all flex items-center justify-center gap-2"
-            >
-              Lihat Menu
             </button>
           </div>
         </div>
@@ -91,3 +85,4 @@ const LandingPage = ({ onLoginAttempt, onRegisterAttempt }) => {
 };
 
 export default LandingPage;
+
