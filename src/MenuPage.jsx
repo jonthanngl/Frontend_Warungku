@@ -96,16 +96,16 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
 
   // --- TAMPILAN HALAMAN RIWAYAT ---
   const HistoryView = () => (
-    <div className="max-w-4xl mx-auto px-6 py-8 animate-fade-in">
+    <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 animate-fade-in">
       
-      {/* HEADER + TOMBOL KEMBALI (MERAH SOLID) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-gray-200 pb-4">
-        <h2 className="text-2xl font-bold text-gray-800">Riwayat Pesanan Anda</h2>
+      {/* HEADER + TOMBOL KEMBALI */}
+      <div className="flex flex-col gap-4 mb-6 border-b border-gray-200 pb-4">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Riwayat Pesanan</h2>
         
-        {/* Tombol Merah Solid */}
+        {/* Tombol Merah Solid - Full Width di HP */}
         <button 
             onClick={() => setCurrentView('menu')} 
-            className="bg-red-600 text-white px-6 py-2.5 rounded-lg font-bold shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
+            className="w-full md:w-auto bg-red-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
         >
           &larr; Kembali ke Menu
         </button>
@@ -114,9 +114,9 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
       {loadingHistory ? (
         <div className="text-center py-10 text-gray-500 font-medium">Sedang memuat data...</div>
       ) : historyOrders.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-800">Belum ada riwayat pesanan</h3>
-          <p className="text-gray-500 text-sm mt-2 mb-6">Pesanan yang kamu buat akan muncul di sini.</p>
+        <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300 shadow-sm mx-2">
+          <h3 className="text-lg font-bold text-gray-800">Belum ada riwayat</h3>
+          <p className="text-gray-500 text-sm mt-2 mb-6 px-4">Pesanan yang kamu buat akan muncul di sini.</p>
           <button 
             onClick={() => setCurrentView('menu')}
             className="bg-slate-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-black transition"
@@ -125,14 +125,14 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           </button>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6 pb-20">
           {historyOrders.map((order) => (
-            <div key={order.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
+            <div key={order.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
               <div className="flex flex-col md:flex-row justify-between mb-4 gap-3">
                 <div>
-                  <div className="flex items-center gap-2">
-                     <span className="font-mono font-bold text-lg text-slate-800">#{order.transaction_code}</span>
-                     <span className={`px-3 py-1 rounded text-xs font-bold uppercase ${
+                  <div className="flex flex-wrap items-center gap-2">
+                     <span className="font-mono font-bold text-base md:text-lg text-slate-800">#{order.transaction_code}</span>
+                     <span className={`px-2 py-1 rounded text-[10px] md:text-xs font-bold uppercase tracking-wide ${
                         order.status === 'Selesai' ? 'bg-green-100 text-green-700' :
                         order.status === 'Sedang Dimasak' ? 'bg-orange-100 text-orange-700' :
                         order.status === 'Dibatalkan' ? 'bg-red-100 text-red-700' :
@@ -143,7 +143,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                   </div>
                   <span className="text-xs text-gray-500 block mt-1">
                     {new Date(order.created_at).toLocaleDateString('id-ID', {
-                        day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                     })}
                   </span>
                 </div>
@@ -152,21 +152,21 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                 {order.status !== 'Selesai' && order.status !== 'Dibatalkan' && (
                   <button 
                     onClick={() => setCurrentView('track')} 
-                    className="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-black transition flex items-center gap-2 self-start md:self-center"
+                    className="w-full md:w-auto bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-black transition text-center"
                   >
                     Lihat Status &rarr;
                   </button>
                 )}
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700 mb-4 whitespace-pre-line leading-relaxed border border-gray-100">
-                <span className="font-bold text-gray-500 text-xs uppercase block mb-2">Menu Dipesan:</span>
+              <div className="bg-gray-50 p-3 md:p-4 rounded-lg text-sm text-gray-700 mb-4 whitespace-pre-line leading-relaxed border border-gray-100">
+                <span className="font-bold text-gray-500 text-[10px] uppercase block mb-1">Menu:</span>
                 {order.menu_items}
               </div>
 
               <div className="flex justify-between items-center border-t border-gray-100 pt-3 mt-2">
-                <span className="text-gray-500 text-sm">Total Pembayaran</span>
-                <span className="font-bold text-lg text-red-600">Rp {parseInt(order.total_price).toLocaleString('id-ID')}</span>
+                <span className="text-gray-500 text-xs md:text-sm">Total Bayar</span>
+                <span className="font-bold text-base md:text-lg text-red-600">Rp {parseInt(order.total_price).toLocaleString('id-ID')}</span>
               </div>
             </div>
           ))}
@@ -202,66 +202,61 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
     <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
       
       {/* NAVBAR */}
-      <nav className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 md:px-8 py-4 flex justify-between items-center shadow-sm">
+      <nav className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-3 md:py-4 flex flex-wrap justify-between items-center shadow-sm gap-2">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentView('menu')}>
-           <div className="bg-red-600 w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold shadow-sm">W</div>
-           <h1 className="font-bold text-xl tracking-wide text-gray-800">WARUNGKU</h1>
+           <div className="bg-red-600 w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold shadow-sm">W</div>
+           <h1 className="font-bold text-lg md:text-xl tracking-wide text-gray-800">WARUNGKU</h1>
         </div>
 
-        <div className="flex items-center gap-3 text-sm font-medium">
-          {/* Tombol Navigasi Hitam Solid (Bukan Teks Putih) */}
+        {/* Navigation Buttons - TAMPIL DI SEMUA LAYAR */}
+        <div className="flex items-center gap-2 md:gap-3 text-xs md:text-sm font-medium ml-auto">
           <button 
             onClick={() => setCurrentView('history')} 
-            className="hidden sm:block px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition font-bold"
+            className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition font-bold"
           >
             Riwayat
           </button>
           <button 
             onClick={() => setCurrentView('track')} 
-            className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition font-bold"
+            className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition font-bold"
           >
-            Cek Status
+            Status
           </button>
           
-          <div className="h-6 w-px bg-gray-300 mx-2 hidden sm:block"></div>
-          
-          <div className="hidden sm:flex flex-col text-right mr-2">
-             <span className="text-xs text-gray-400">Halo,</span>
-             <span className="font-bold leading-none">{userName || 'Pelanggan'}</span>
-          </div>
+          <div className="h-6 w-px bg-gray-300 mx-1 hidden sm:block"></div>
           
           <button 
             onClick={onLogout} 
-            className="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-600 hover:text-white transition"
+            className="bg-red-50 text-red-600 px-3 py-2 rounded-lg font-bold hover:bg-red-600 hover:text-white transition"
           >
             Keluar
           </button>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-32">
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Pilih Menu</h2>
-          <p className="text-gray-500 text-sm">Temukan makanan favoritmu di sini.</p>
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 pb-32">
+        <div className="mb-6">
+          <h2 className="text-xl md:text-3xl font-bold text-gray-800 mb-2">Pilih Menu</h2>
+          <p className="text-gray-500 text-xs md:text-sm">Temukan makanan favoritmu di sini.</p>
           
           {initialFilter && (searchTerm !== '' || activeCategory !== 'Semua') && (
-            <div className="mt-4 bg-slate-900 text-white p-3 rounded-lg flex justify-between items-center text-sm shadow-md">
+            <div className="mt-4 bg-slate-900 text-white p-3 rounded-lg flex justify-between items-center text-xs md:text-sm shadow-md">
               <span>Filter: <b>{initialFilter}</b></span>
               <button 
                 onClick={() => {setSearchTerm(''); setActiveCategory('Semua');}}
-                className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition text-xs font-bold"
+                className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition font-bold"
               >
-                Reset Filter
+                Reset
               </button>
             </div>
           )}
 
-          <div className="flex flex-col md:flex-row gap-4 mt-6">
+          <div className="flex flex-col md:flex-row gap-3 mt-6">
             <input 
               type="text" 
               value={searchTerm}
               placeholder="Cari menu..." 
-              className="flex-1 px-4 py-3 rounded-lg bg-white border border-gray-300 focus:border-red-500 focus:outline-none shadow-sm"
+              className="flex-1 px-4 py-3 rounded-lg bg-white border border-gray-300 focus:border-red-500 focus:outline-none shadow-sm text-sm"
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             
@@ -270,7 +265,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-3 rounded-lg font-bold text-sm whitespace-nowrap border transition shadow-sm ${
+                  className={`px-4 py-2 md:px-5 md:py-3 rounded-lg font-bold text-xs md:text-sm whitespace-nowrap border transition shadow-sm ${
                     activeCategory === cat 
                     ? 'bg-red-600 text-white border-red-600' 
                     : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
@@ -284,15 +279,15 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
         </div>
 
         {loading ? (
-          <div className="text-center py-10 text-gray-400">Memuat menu...</div>
+          <div className="text-center py-10 text-gray-400 text-sm">Memuat menu...</div>
         ) : filteredItems.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {filteredItems.map((item) => (
               <MenuCard key={item.id} item={item} onAddToCart={addToCart} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm">
             <h3 className="font-bold text-gray-800">Menu tidak ditemukan</h3>
             <button onClick={() => {setSearchTerm(''); setActiveCategory('Semua');}} className="mt-3 text-red-600 font-bold hover:underline text-sm">
               Lihat semua menu
@@ -306,13 +301,13 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
         <div className="fixed bottom-6 inset-x-0 flex justify-center z-50 px-4 animate-slide-up">
           <button 
             onClick={() => setCurrentView('cart')}
-            className="bg-slate-900 text-white w-full max-w-md px-6 py-4 rounded-xl shadow-2xl flex justify-between items-center hover:scale-[1.02] transition transform cursor-pointer border border-slate-700"
+            className="bg-slate-900 text-white w-full max-w-md px-5 py-3 md:px-6 md:py-4 rounded-xl shadow-2xl flex justify-between items-center hover:scale-[1.02] transition transform cursor-pointer border border-slate-700"
           >
             <div className="text-left">
                <span className="block text-[10px] text-gray-400 uppercase font-bold tracking-wider">Total ({cart.reduce((a,b) => a + b.qty, 0)} Item)</span>
-               <span className="font-bold text-lg text-white">Rp {totalPrice.toLocaleString('id-ID')}</span>
+               <span className="font-bold text-base md:text-lg text-white">Rp {totalPrice.toLocaleString('id-ID')}</span>
             </div>
-            <div className="font-bold text-xs bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700">
+            <div className="font-bold text-xs bg-red-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg shadow hover:bg-red-700">
                Lihat Keranjang &rarr;
             </div>
           </button>
