@@ -5,20 +5,22 @@ import OrderSuccess from './OrderSuccess';
 import TrackOrder from './TrackOrder'; 
 import { toast } from 'react-hot-toast';
 
-const API_URL = 'https://backend-warungku.vercel.app';
+const API_URL = 'http://localhost:5000'; // Pastikan sesuai port backend
 
-const MenuPage = ({ onLogout, userName, initialFilter }) => { 
+const MenuPage = ({ onLogout, userName, userEmail }) => { 
+  // --- STATE MANAGEMENT ---
+  const [lastTxCode, setLastTxCode] = useState(null);
   const [activeCategory, setActiveCategory] = useState('Semua');
   const [searchTerm, setSearchTerm] = useState(''); 
   const [cart, setCart] = useState([]);
   const [currentView, setCurrentView] = useState('menu'); 
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // State Data dari Backend
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [transactionCode, setTransactionCode] = useState('');
-  
-  const categories = ['Semua', 'Makanan', 'Minuman', 'Cemilan'];
 
-  // 1. Ambil Data Menu
+  // --- FETCH DATA MENU ---
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -31,197 +33,228 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
         setLoading(false);
       }
     };
+
     fetchMenu();
   }, []);
 
-  // 2. Handle Filter dari Landing Page
-  useEffect(() => {
-    if (initialFilter) {
-      if (initialFilter === 'pedas') setSearchTerm('pedas');
-      else if (initialFilter === 'segar') setActiveCategory('Minuman');
-      else if (initialFilter === 'kenyang') setActiveCategory('Makanan');
-      else if (initialFilter === 'nyemil') setActiveCategory('Cemilan');
-    }
-  }, [initialFilter]);
-
-  // Fungsi Keranjang
+  // --- LOGIKA KERANJANG ---
   const addToCart = (item) => {
-    setCart(prev => {
-      const exists = prev.find(x => x.id === item.id);
-      if (exists) return prev.map(x => x.id === item.id ? {...x, qty: x.qty + 1} : x);
-      return [...prev, { ...item, qty: 1 }];
-    });
-    toast.success(`${item.name} +1`);
+    const existingItem = cart.find(x => x.id === item.id);
+    if (existingItem) {
+      setCart(cart.map(x => x.id === item.id ? {...existingItem, qty: existingItem.qty + 1} : x));
+    } else {
+      setCart([...cart, { ...item, qty: 1 }]);
+    }
+    toast.success(`${item.name} ditambahkan`);
   };
 
-  const removeFromCart = (id) => setCart(prev => prev.filter(item => item.id !== id));
-  const increaseQty = (id) => setCart(prev => prev.map(item => item.id === id ? {...item, qty: item.qty + 1} : item));
-  const decreaseQty = (id) => setCart(prev => prev.map(item => item.id === id && item.qty > 1 ? {...item, qty: item.qty - 1} : item));
+  const increaseQty = (id) => {
+    setCart(cart.map(item => item.id === id ? { ...item, qty: item.qty + 1 } : item));
+  };
 
+  const decreaseQty = (id) => {
+    setCart(cart.map(item => {
+      if (item.id === id) {
+        const newQty = item.qty - 1;
+        return newQty > 0 ? { ...item, qty: newQty } : null; 
+      }
+      return item;
+    }).filter(Boolean));
+  };
+
+  const removeFromCart = (id) => {
+    setCart(cart.filter(item => item.id !== id));
+  };
+
+  const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
+  const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+  // --- LOGIKA FILTER ---
   const filteredItems = menuItems.filter(item => {
     const matchCategory = activeCategory === 'Semua' || item.category === activeCategory;
-    const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                        (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     return matchCategory && matchSearch;
   });
 
-  const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+  // --- ROUTING TAMPILAN ---
+  if (currentView === 'track') {
+      return <TrackOrder onBack={() => setCurrentView('menu')} />;
+  }
 
-  // ROUTING VIEW
-  if (currentView === 'cart') {
+  if (currentView === 'success') {
     return (
-      <CartView 
-        cart={cart} 
-        totalPrice={totalPrice} 
-        onBack={() => setCurrentView('menu')}
-        onIncrease={increaseQty}
-        onDecrease={decreaseQty}
-        onRemove={removeFromCart}
-        onConfirmOrder={(code) => {
-          setTransactionCode(code);
-          setCart([]);
-          setCurrentView('success');
-        }}
-      />
+        <OrderSuccess 
+            transactionCode={lastTxCode} 
+            onBackToHome={() => {
+                setCurrentView('menu');
+                setCart([]); 
+            }} 
+        />
     );
   }
 
-  if (currentView === 'success') return <OrderSuccess transactionCode={transactionCode} onBackMenu={() => setCurrentView('menu')} />;
-  if (currentView === 'track') return <TrackOrder onBack={() => setCurrentView('menu')} />;
+  if (currentView === 'cart') {
+    return (
+        <CartView 
+            cart={cart}
+            totalPrice={totalPrice}
+            onBack={() => setCurrentView('menu')}
+            onIncrease={increaseQty}
+            onDecrease={decreaseQty}
+            onRemove={removeFromCart}
+            onConfirmOrder={(code) => { 
+                setLastTxCode(code); 
+                setCurrentView('success'); 
+            }} 
+        />
+    );
+  }
 
+  // --- TAMPILAN UTAMA (MENU) ---
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
+    <div className="min-h-screen bg-warung-bg font-sans pb-24 animate-fade-in">
       
-      {/* NAVBAR MERAH SOLID (BRANDING WARUNGKU) */}
-      <nav className="sticky top-0 z-40 bg-red-600 text-white shadow-lg px-4 md:px-8 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentView('menu')}>
-           <div className="bg-white text-red-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-sm text-lg transform rotate-3">WK</div>
-           <h1 className="font-bold text-xl tracking-wide italic">WARUNGKU.</h1>
+      {/* NAVBAR (Style Asli WarungKu) */}
+      <nav className="bg-warung-navbar px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-warung">
+        <div className="bg-white px-3 py-1 rounded shadow-sm">
+           <h1 className="text-warung-navbar font-bold text-xl tracking-widest leading-none">WARUNGKU</h1>
         </div>
+        
+        <div className="flex items-center gap-3 md:gap-4">
+            {/* Tombol Status (Tanpa Riwayat) */}
+            <button 
+                onClick={() => setCurrentView('track')} 
+                className="flex items-center gap-2 bg-warung-btn1 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-red-700 transition"
+            >
+                <span>🔔</span> <span className="hidden md:inline">Cek Status</span>
+            </button>
+            
+            {/* Profile Dropdown */}
+            <div className="relative">
+                <button 
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    className="flex items-center gap-2 text-green-500 font-bold bg-black bg-opacity-20 px-3 py-1 rounded-full cursor-pointer hover:bg-opacity-30 transition select-none"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span className="text-sm md:text-base">{userName || 'Pengguna'}</span>
+                </button>
 
-        <div className="flex items-center gap-2 md:gap-4 text-sm font-medium">
-          {/* Tombol Status */}
-          <button 
-            onClick={() => setCurrentView('track')} 
-            className="px-3 py-2 rounded-xl bg-red-700 hover:bg-red-800 text-white transition shadow-sm border border-red-500 font-bold"
-          >
-            Cek Status
-          </button>
-          
-          <div className="h-6 w-px bg-red-400 mx-1 hidden sm:block"></div>
-          
-          <div className="hidden sm:flex flex-col text-right mr-2">
-             <span className="text-xs text-red-100">Halo,</span>
-             <span className="font-bold leading-none">{userName || 'Pelanggan'}</span>
-          </div>
-          
-          <button 
-            onClick={onLogout} 
-            className="bg-white text-red-600 px-4 py-2 rounded-xl font-bold hover:bg-gray-100 transition shadow-sm"
-          >
-            Keluar
-          </button>
+                {showProfileMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 border border-gray-100 animate-fade-in">
+                        <div className="px-4 py-2 border-b border-gray-100">
+                            <p className="text-sm font-bold text-gray-800">Halo, {userName}!</p> 
+                            <p className="text-xs text-gray-500">{userEmail}</p> 
+                        </div>
+                        
+                        <button 
+                            onClick={onLogout}
+                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-bold flex items-center gap-2 transition"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                            Keluar
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-32">
-        {/* Banner Selamat Datang */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm mb-8 border-l-8 border-red-600 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Mau makan apa hari ini?</h2>
-            <p className="text-gray-500">Pilih menu favoritmu dan nikmati rasanya!</p>
-          </div>
-          
-          {/* Banner Filter */}
-          {initialFilter && (searchTerm !== '' || activeCategory !== 'Semua') && (
-            <div className="bg-gray-900 text-white px-4 py-2 rounded-xl flex items-center gap-3 shadow-lg">
-              <span className="text-sm">Filter Aktif: <b>{initialFilter}</b></span>
-              <button 
-                onClick={() => {setSearchTerm(''); setActiveCategory('Semua');}}
-                className="bg-white/20 hover:bg-white/30 px-2 py-1 rounded text-xs font-bold"
-              >
-                ✕ Hapus
-              </button>
+      {/* SUB HEADER (Style Asli WarungKu) */}
+      <div className="bg-warung-shadow-color px-6 py-6 shadow-md">
+        <div className="max-w-7xl mx-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 pl-1">Pilih Menu Anda</h2>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                {/* Kategori */}
+                <div className="flex gap-3 overflow-x-auto pb-2 w-full md:flex-1 hide-scrollbar">
+                    {['Semua', 'Makanan', 'Minuman', 'Cemilan'].map((cat) => (
+                        <button 
+                            key={cat}
+                            onClick={() => setActiveCategory(cat)}
+                            className={`px-5 py-2 rounded-lg font-bold shadow-sm whitespace-nowrap transition border text-sm ${
+                                activeCategory === cat 
+                                ? 'bg-warung-btn1 text-white border-warung-btn1' 
+                                : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50' 
+                            }`}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
+                
+                {/* Pencarian */}
+                <div className="relative w-full md:w-60 shrink-0">
+                    <input 
+                        type="text" 
+                        placeholder="Cari makan..." 
+                        value={searchTerm} 
+                        onChange={(e) => setSearchTerm(e.target.value)} 
+                        className="w-full pl-10 pr-4 py-2 rounded-lg bg-warung-btn1 text-white placeholder-white/80 focus:outline-none shadow-inner text-sm"
+                    />
+                    <div className="absolute left-3 top-2.5 text-white/80">
+                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </div>
+                </div>
+
             </div>
-          )}
         </div>
+      </div>
 
-        {/* Pencarian & Kategori */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-             <input 
-              type="text" 
-              value={searchTerm}
-              placeholder="Cari nasi goreng, ayam bakar..." 
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-white border-2 border-transparent focus:border-red-600 focus:ring-0 shadow-sm text-gray-800 transition-all placeholder-gray-400"
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
-          </div>
-          
-          <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-6 py-3 rounded-xl font-bold text-sm whitespace-nowrap transition-all shadow-sm ${
-                  activeCategory === cat 
-                  ? 'bg-red-600 text-white shadow-red-200' 
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Grid Menu */}
+      {/* MAIN CONTENT (LIST MAKANAN) */}
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+        
         {loading ? (
-          <div className="text-center py-20 text-gray-400">Sedang memuat menu lezat...</div>
+           <div className="text-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warung-btn1 mx-auto"></div>
+              <p className="mt-4 text-gray-500">Sedang memuat menu lezat...</p>
+           </div>
         ) : filteredItems.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredItems.map((item) => (
-              <MenuCard key={item.id} item={item} onAddToCart={addToCart} />
-            ))}
-          </div>
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredItems.map((item) => (
+                  <MenuCard 
+                      key={item.id} 
+                      item={item} 
+                      onAddToCart={addToCart}
+                  />
+              ))}
+           </div>
         ) : (
-          <div className="text-center py-24 bg-white rounded-3xl shadow-sm">
-            <div className="text-6xl mb-4">🍲</div>
-            <h3 className="font-bold text-xl text-gray-800">Menu tidak ditemukan</h3>
-            <button onClick={() => {setSearchTerm(''); setActiveCategory('Semua');}} className="mt-4 text-red-600 font-bold hover:underline">
-              Lihat semua menu
-            </button>
-          </div>
+           <div className="text-center py-20 text-gray-500 font-bold">
+              <p>Menu tidak ditemukan 😢</p>
+           </div>
         )}
+
       </main>
 
-      {/* KERANJANG MELAYANG (UKURAN DIPERBESAR) */}
+      {/* FLOATING CART (BESAR) */}
       {cart.length > 0 && (
-        <div className="fixed bottom-6 inset-x-0 flex justify-center z-50 px-4 animate-bounce-in">
-          <button 
-            onClick={() => setCurrentView('cart')}
-            className="bg-gray-900 text-white w-full max-w-lg px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-5 hover:scale-[1.02] transition-transform cursor-pointer border-2 border-white/10"
-          >
-            {/* Icon Keranjang Merah (Lebih Besar) */}
-            <div className="bg-red-600 w-14 h-14 rounded-xl flex items-center justify-center shadow-lg relative shrink-0">
-               <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-               <span className="absolute -top-2 -right-2 bg-white text-red-600 text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-red-600">
-                 {cart.reduce((a,b) => a + b.qty, 0)}
-               </span>
+        <div className="fixed bottom-0 left-0 w-full p-4 z-50 animate-slide-up">
+            <div className="max-w-7xl mx-auto">
+                <button 
+                    onClick={() => setCurrentView('cart')}
+                    className="w-full bg-warung-btn1 text-white py-4 px-6 rounded-xl shadow-2xl flex justify-between items-center hover:bg-red-700 transition transform hover:scale-[1.01]"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="bg-white/20 p-3 rounded-lg">
+                            {/* Ikon Keranjang Besar */}
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                        </div>
+                        <div className="text-left">
+                            <span className="block font-bold text-xl leading-none mb-1">
+                                {totalItems} Item
+                            </span>
+                            <span className="text-sm text-white/80">Lihat Keranjang</span>
+                        </div>
+                    </div>
+                    <div className="font-bold text-2xl">
+                        Rp {totalPrice.toLocaleString('id-ID')}
+                    </div>
+                </button>
             </div>
-            
-            <div className="flex-1 text-left">
-               <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-0.5">Total Pembayaran</p>
-               <p className="text-xl font-bold">Rp {totalPrice.toLocaleString('id-ID')}</p>
-            </div>
-            
-            <div className="text-base font-bold bg-white/10 px-5 py-3 rounded-xl hover:bg-white/20 transition">
-               Lihat &rarr;
-            </div>
-          </button>
         </div>
       )}
+
     </div>
   );
 };
