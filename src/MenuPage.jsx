@@ -11,7 +11,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
   const [activeCategory, setActiveCategory] = useState('Semua');
   const [searchTerm, setSearchTerm] = useState(''); 
   const [cart, setCart] = useState([]);
-  const [currentView, setCurrentView] = useState('menu'); // menu, cart, success, track, history
+  const [currentView, setCurrentView] = useState('menu'); 
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [transactionCode, setTransactionCode] = useState('');
@@ -22,7 +22,6 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
 
   const categories = ['Semua', 'Makanan', 'Minuman', 'Cemilan'];
 
-  // 1. Ambil Data Menu
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -38,7 +37,6 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
     fetchMenu();
   }, []);
 
-  // 2. Ambil Riwayat Pesanan
   useEffect(() => {
     if (currentView === 'history') {
       const fetchHistory = async () => {
@@ -48,7 +46,6 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           const response = await fetch(`${API_URL}/api/orders`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
-          
           if (response.ok) {
             const allOrders = await response.json();
             const myOrders = allOrders.filter(order => order.customer_name === userName);
@@ -66,7 +63,6 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
     }
   }, [currentView, userName]);
 
-  // Handle Filter
   useEffect(() => {
     if (initialFilter) {
       if (initialFilter === 'pedas') setSearchTerm('pedas');
@@ -76,7 +72,6 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
     }
   }, [initialFilter]);
 
-  // Fungsi Keranjang
   const addToCart = (item) => {
     setCart(prev => {
       const exists = prev.find(x => x.id === item.id);
@@ -99,18 +94,18 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
 
   const totalPrice = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-  // --- TAMPILAN HALAMAN RIWAYAT (DIPERBAIKI TOMBOLNYA) ---
+  // --- TAMPILAN HALAMAN RIWAYAT ---
   const HistoryView = () => (
     <div className="max-w-4xl mx-auto px-6 py-8 animate-fade-in">
       
-      {/* Tombol KEMBALI KE MENU yang Jelas */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b pb-4">
+      {/* HEADER + TOMBOL KEMBALI (MERAH SOLID) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-gray-200 pb-4">
         <h2 className="text-2xl font-bold text-gray-800">Riwayat Pesanan Anda</h2>
         
-        {/* BUTTON: Merah Solid agar terlihat jelas */}
+        {/* Tombol Merah Solid */}
         <button 
             onClick={() => setCurrentView('menu')} 
-            className="bg-red-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
+            className="bg-red-600 text-white px-6 py-2.5 rounded-lg font-bold shadow-md hover:bg-red-700 transition flex items-center justify-center gap-2"
         >
           &larr; Kembali ke Menu
         </button>
@@ -124,7 +119,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           <p className="text-gray-500 text-sm mt-2 mb-6">Pesanan yang kamu buat akan muncul di sini.</p>
           <button 
             onClick={() => setCurrentView('menu')}
-            className="bg-slate-800 text-white px-6 py-3 rounded-lg font-bold hover:bg-black transition"
+            className="bg-slate-900 text-white px-6 py-3 rounded-lg font-bold hover:bg-black transition"
           >
             Pesan Sekarang
           </button>
@@ -153,7 +148,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                   </span>
                 </div>
                 
-                {/* BUTTON: Lihat Status (Solid Hitam) */}
+                {/* TOMBOL LIHAT STATUS (Hitam Solid) */}
                 {order.status !== 'Selesai' && order.status !== 'Dibatalkan' && (
                   <button 
                     onClick={() => setCurrentView('track')} 
@@ -169,7 +164,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
                 {order.menu_items}
               </div>
 
-              <div className="flex justify-between items-center border-t pt-3 mt-2">
+              <div className="flex justify-between items-center border-t border-gray-100 pt-3 mt-2">
                 <span className="text-gray-500 text-sm">Total Pembayaran</span>
                 <span className="font-bold text-lg text-red-600">Rp {parseInt(order.total_price).toLocaleString('id-ID')}</span>
               </div>
@@ -208,29 +203,29 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
       
       {/* NAVBAR */}
       <nav className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 md:px-8 py-4 flex justify-between items-center shadow-sm">
-        <div className="flex items-center gap-2" onClick={() => setCurrentView('menu')}>
-           <div className="bg-red-600 w-8 h-8 rounded flex items-center justify-center text-white font-bold cursor-pointer">W</div>
-           <h1 className="font-bold text-xl tracking-wide text-gray-800 cursor-pointer">WARUNGKU</h1>
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentView('menu')}>
+           <div className="bg-red-600 w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold shadow-sm">W</div>
+           <h1 className="font-bold text-xl tracking-wide text-gray-800">WARUNGKU</h1>
         </div>
 
-        <div className="flex items-center gap-3 md:gap-6 text-sm font-medium">
-          {/* Tombol Navigasi dibuat lebih 'Button-like' */}
+        <div className="flex items-center gap-3 text-sm font-medium">
+          {/* Tombol Navigasi Hitam Solid (Bukan Teks Putih) */}
           <button 
             onClick={() => setCurrentView('history')} 
-            className="px-3 py-1.5 rounded-md hover:bg-gray-100 text-gray-600 hover:text-red-600 transition"
+            className="hidden sm:block px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition font-bold"
           >
             Riwayat
           </button>
           <button 
             onClick={() => setCurrentView('track')} 
-            className="px-3 py-1.5 rounded-md hover:bg-gray-100 text-gray-600 hover:text-red-600 transition"
+            className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition font-bold"
           >
             Cek Status
           </button>
           
-          <div className="h-5 w-px bg-gray-300 hidden sm:block"></div>
+          <div className="h-6 w-px bg-gray-300 mx-2 hidden sm:block"></div>
           
-          <div className="hidden sm:flex flex-col text-right">
+          <div className="hidden sm:flex flex-col text-right mr-2">
              <span className="text-xs text-gray-400">Halo,</span>
              <span className="font-bold leading-none">{userName || 'Pelanggan'}</span>
           </div>
@@ -245,12 +240,10 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-32">
-        {/* Header */}
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Pilih Menu</h2>
           <p className="text-gray-500 text-sm">Temukan makanan favoritmu di sini.</p>
           
-          {/* Banner Filter */}
           {initialFilter && (searchTerm !== '' || activeCategory !== 'Semua') && (
             <div className="mt-4 bg-slate-900 text-white p-3 rounded-lg flex justify-between items-center text-sm shadow-md">
               <span>Filter: <b>{initialFilter}</b></span>
@@ -263,7 +256,6 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
             </div>
           )}
 
-          {/* Search & Categories */}
           <div className="flex flex-col md:flex-row gap-4 mt-6">
             <input 
               type="text" 
@@ -291,7 +283,6 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
           </div>
         </div>
 
-        {/* Grid Menu */}
         {loading ? (
           <div className="text-center py-10 text-gray-400">Memuat menu...</div>
         ) : filteredItems.length > 0 ? (
@@ -310,7 +301,7 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
         )}
       </main>
 
-      {/* Keranjang Melayang */}
+      {/* KERANJANG MELAYANG */}
       {cart.length > 0 && (
         <div className="fixed bottom-6 inset-x-0 flex justify-center z-50 px-4 animate-slide-up">
           <button 
