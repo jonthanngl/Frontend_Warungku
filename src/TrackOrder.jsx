@@ -30,28 +30,28 @@ const TrackOrder = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center p-6 font-sans">
+    <div className="min-h-screen bg-warung-secondary flex flex-col items-center p-6 font-sans">
       
-      {/* Header dengan Tombol Kembali Teks */}
+      {/* Tombol Kembali yang Jelas */}
       <div className="w-full max-w-md flex items-center justify-between mb-8 mt-4">
         <button 
             onClick={onBack} 
-            className="text-red-600 font-bold hover:text-red-800 transition flex items-center gap-2 text-sm"
+            className="text-warung-primary font-bold hover:text-red-700 transition flex items-center gap-2 text-sm"
         >
            &larr; Kembali
         </button>
-        <h2 className="text-xl font-bold text-gray-800">Cek Status Pesanan</h2>
-        <div className="w-8"></div> {/* Spacer */}
+        <h2 className="text-xl font-black text-gray-900">Cek Status Pesanan</h2>
+        <div className="w-8"></div>
       </div>
 
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 w-full max-w-md">
+      <div className="bg-white p-8 rounded-[2rem] shadow-premium w-full max-w-md border border-white">
         <form onSubmit={handleCheck} className="mb-6">
           <label className="block text-sm font-bold text-gray-700 mb-2">Kode Transaksi</label>
           <div className="flex gap-2">
             <input 
               type="text" 
               placeholder="Contoh: W-172..." 
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition"
+              className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-warung-primary/30 transition outline-none"
               value={code}
               onChange={(e) => setCode(e.target.value)}
               required
@@ -59,7 +59,7 @@ const TrackOrder = ({ onBack }) => {
             <button 
               type="submit" 
               disabled={loading}
-              className="bg-red-600 text-white px-6 rounded-lg font-bold hover:bg-red-700 transition disabled:opacity-50"
+              className="bg-warung-primary text-white px-6 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg shadow-warung-primary/30 disabled:opacity-50"
             >
               {loading ? '...' : 'Cek'}
             </button>
@@ -67,19 +67,19 @@ const TrackOrder = ({ onBack }) => {
         </form>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-lg text-center font-bold text-sm border border-red-100">
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl text-center font-bold text-sm">
             {error}
           </div>
         )}
 
         {orderStatus && (
-          <div className="bg-green-50 p-6 rounded-xl border border-green-100 animate-fade-in-up">
+          <div className="bg-green-50 p-6 rounded-[1.5rem] border border-green-100 animate-fade-in-up">
             <div className="text-center mb-4">
               <p className="text-xs text-green-600 font-bold uppercase tracking-widest mb-1">Status Saat Ini</p>
-              <h3 className="text-2xl font-extrabold text-green-700">{orderStatus.status}</h3>
+              <h3 className="text-2xl font-black text-green-700">{orderStatus.status}</h3>
             </div>
             
-            <div className="space-y-3 text-sm text-gray-600 bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+            <div className="space-y-3 text-sm text-gray-600 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
               <div className="flex justify-between">
                 <span>Pemesan:</span>
                 <span className="font-bold text-gray-800">{orderStatus.customer_name}</span>
