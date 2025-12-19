@@ -2,11 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Sembunyikan Scrollbar tapi tetap bisa di-scroll */
-.hide-scrollbar::-webkit-scrollbar {
-    display: none;
+@layer base {
+  body {
+    @apply bg-warung-secondary text-warung-dark antialiased;
+  }
 }
-.hide-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+
+/* Custom Scrollbar Modern */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-warung-primary/20 rounded-full hover:bg-warung-primary/40 transition-colors;
+}
+
+.glass-morphism {
+  @apply bg-white/80 backdrop-blur-md border border-white/20;
+}
+
+.nav-link-active {
+  @apply relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-warung-primary;
 }
