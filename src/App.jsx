@@ -4,6 +4,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import LandingPage from './LandingPage';
 import MenuPage from './MenuPage';
 import AdminPage from './AdminPage';
+import RecommendationPage from './RecommendationPage'; // Import file baru
 
 const API_URL = 'https://backend-warungku.vercel.app';
 
@@ -13,6 +14,10 @@ function App() {
     const savedData = localStorage.getItem('userData');
     return savedData ? JSON.parse(savedData) : null;
   });
+
+  // State tambahan untuk alur rekomendasi
+  const [currentView, setCurrentView] = useState('recommendation');
+  const [filterSaran, setFilterSaran] = useState(null);
 
   const handleLogin = async (email, password) => {
     const loadingToast = toast.loading('Sedang masuk...');
@@ -29,8 +34,13 @@ function App() {
         localStorage.setItem('userToken', data.token); 
         localStorage.setItem('userRole', data.user.role);
         localStorage.setItem('userData', JSON.stringify(data.user));
+        
         setUserRole(data.user.role);
         setUserData(data.user);
+        
+        // Reset tampilan ke rekomendasi setiap kali login baru
+        setCurrentView('recommendation');
+        
         toast.success(`Selamat datang, ${data.user.name}!`); 
       } else {
         toast.error(data.message || 'Login gagal'); 
@@ -67,6 +77,7 @@ function App() {
     localStorage.clear();
     setUserRole('guest');
     setUserData(null);
+    setFilterSaran(null);
     toast.success('Berhasil keluar');
   };
 
@@ -74,18 +85,36 @@ function App() {
     <>
       <Toaster position="top-center" reverseOrder={false} />
       
-      {/* Routing Sederhana */}
+      {/* 1. VIEW GUEST */}
       {userRole === 'guest' && (
         <LandingPage onLoginAttempt={handleLogin} onRegisterAttempt={handleRegister} />
       )}
       
+      {/* 2. VIEW USER (DENGAN REKOMENDASI) */}
       {userRole === 'user' && (
-        <MenuPage 
-          onLogout={handleLogout} 
-          userName={userData?.name} 
-        />
+        <>
+          {currentView === 'recommendation' ? (
+            <RecommendationPage 
+              onSelectCategory={(cat) => {
+                setFilterSaran(cat);
+                setCurrentView('menu');
+              }}
+              onSkip={() => {
+                setFilterSaran(null);
+                setCurrentView('menu');
+              }}
+            />
+          ) : (
+            <MenuPage 
+              onLogout={handleLogout} 
+              userName={userData?.name} 
+              initialFilter={filterSaran} // Mengirim pilihan user ke MenuPage
+            />
+          )}
+        </>
       )}
       
+      {/* 3. VIEW ADMIN */}
       {userRole === 'admin' && (
         <AdminPage 
           onLogout={handleLogout} 
