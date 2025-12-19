@@ -3,13 +3,6 @@ import React from 'react';
 const RecommendationPage = ({ onSelectCategory, onSkip }) => {
   const suggestions = [
     { 
-      id: 'pedas', 
-      title: 'Lagi Pengen Pedes?', 
-      desc: 'Bikin melek dan semangat lagi!', 
-      icon: '🔥', 
-      color: 'bg-red-50 text-red-600 border-red-100' 
-    },
-    { 
       id: 'segar', 
       title: 'Mau yang Seger-seger?', 
       desc: 'Cocok buat cuaca panas begini.', 
