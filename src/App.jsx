@@ -4,7 +4,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import LandingPage from './LandingPage';
 import MenuPage from './MenuPage';
 import AdminPage from './AdminPage';
-import RecommendationPage from './RecommendationPage'; // Import file baru
+import RecommendationPage from './RecommendationPage'; 
 
 const API_URL = 'https://backend-warungku.vercel.app';
 
@@ -15,7 +15,7 @@ function App() {
     return savedData ? JSON.parse(savedData) : null;
   });
 
-  // State tambahan untuk alur rekomendasi
+  // Default view adalah 'recommendation' agar muncul halaman saran dulu
   const [currentView, setCurrentView] = useState('recommendation');
   const [filterSaran, setFilterSaran] = useState(null);
 
@@ -37,35 +37,11 @@ function App() {
         
         setUserRole(data.user.role);
         setUserData(data.user);
-        
-        // Reset tampilan ke rekomendasi setiap kali login baru
-        setCurrentView('recommendation');
+        setCurrentView('recommendation'); // Arahkan ke rekomendasi setelah login
         
         toast.success(`Selamat datang, ${data.user.name}!`); 
       } else {
         toast.error(data.message || 'Login gagal'); 
-      }
-    } catch (error) {
-      toast.dismiss(loadingToast);
-      toast.error('Gagal terhubung ke server');
-    }
-  };
-
-  const handleRegister = async (name, email, phone, password) => {
-    const loadingToast = toast.loading('Mendaftarkan akun...');
-    try {
-      const response = await fetch(`${API_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone_number: phone, password })
-      });
-      const data = await response.json();
-      toast.dismiss(loadingToast);
-
-      if (response.ok) {
-        toast.success('Pendaftaran berhasil! Silakan masuk.');
-      } else {
-        toast.error(data.message || 'Pendaftaran gagal');
       }
     } catch (error) {
       toast.dismiss(loadingToast);
@@ -85,12 +61,12 @@ function App() {
     <>
       <Toaster position="top-center" reverseOrder={false} />
       
-      {/* 1. VIEW GUEST */}
+      {/* 1. JIKA BELUM LOGIN */}
       {userRole === 'guest' && (
-        <LandingPage onLoginAttempt={handleLogin} onRegisterAttempt={handleRegister} />
+        <LandingPage onLoginAttempt={handleLogin} onRegisterAttempt={() => {}} />
       )}
       
-      {/* 2. VIEW USER (DENGAN REKOMENDASI) */}
+      {/* 2. JIKA LOGIN SEBAGAI USER */}
       {userRole === 'user' && (
         <>
           {currentView === 'recommendation' ? (
@@ -108,13 +84,13 @@ function App() {
             <MenuPage 
               onLogout={handleLogout} 
               userName={userData?.name} 
-              initialFilter={filterSaran} // Mengirim pilihan user ke MenuPage
+              initialFilter={filterSaran} 
             />
           )}
         </>
       )}
       
-      {/* 3. VIEW ADMIN */}
+      {/* 3. JIKA LOGIN SEBAGAI ADMIN */}
       {userRole === 'admin' && (
         <AdminPage 
           onLogout={handleLogout} 
