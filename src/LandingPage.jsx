@@ -53,7 +53,7 @@ const LandingPage = ({ onLoginAttempt, onRegisterAttempt }) => {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
-              onClick={() => openModal('daftar')}
+              onClick={() => openModal('masuk')}
               className="bg-warung-primary text-white px-10 py-5 rounded-3xl font-black text-lg hover:scale-105 transition-transform shadow-2xl shadow-warung-primary/40"
             >
               Pesan Sekarang
@@ -75,4 +75,5 @@ const LandingPage = ({ onLoginAttempt, onRegisterAttempt }) => {
 };
 
 export default LandingPage;
+
 
