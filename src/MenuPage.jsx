@@ -347,3 +347,4 @@ const MenuPage = ({ onLogout, userName, initialFilter }) => {
 };
 
 export default MenuPage;
+
