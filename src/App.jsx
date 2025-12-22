@@ -6,6 +6,7 @@ import MenuPage from './MenuPage';
 import AdminPage from './AdminPage';
 import RecommendationPage from './RecommendationPage'; 
 
+// Pastikan URL ini sesuai dengan backend Anda
 const API_URL = 'https://backend-warungku.vercel.app';
 
 function App() {
@@ -15,10 +16,11 @@ function App() {
     return savedData ? JSON.parse(savedData) : null;
   });
 
-  // Default view adalah 'recommendation' agar muncul halaman saran dulu
+  // State untuk navigasi tampilan
   const [currentView, setCurrentView] = useState('recommendation');
   const [filterSaran, setFilterSaran] = useState(null);
 
+  // 1. FUNGSI LOGIN
   const handleLogin = async (email, password) => {
     const loadingToast = toast.loading('Sedang masuk...');
     try {
@@ -31,13 +33,14 @@ function App() {
       toast.dismiss(loadingToast);
 
       if (response.ok) {
+        // Simpan token dan data ke localStorage agar bisa dipakai fitur Riwayat
         localStorage.setItem('userToken', data.token); 
         localStorage.setItem('userRole', data.user.role);
         localStorage.setItem('userData', JSON.stringify(data.user));
         
         setUserRole(data.user.role);
         setUserData(data.user);
-        setCurrentView('recommendation'); // Arahkan ke rekomendasi setelah login
+        setCurrentView('recommendation'); 
         
         toast.success(`Selamat datang, ${data.user.name}!`); 
       } else {
@@ -49,11 +52,37 @@ function App() {
     }
   };
 
+  // 2. FUNGSI REGISTRASI (Perbaikan untuk tombol daftar)
+  const handleRegister = async (registrationData) => {
+    const loadingToast = toast.loading('Mendaftarkan akun...');
+    try {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(registrationData)
+      });
+      const data = await response.json();
+      toast.dismiss(loadingToast);
+
+      if (response.ok) {
+        toast.success('Registrasi berhasil! Silakan masuk dengan akun baru Anda.');
+        // Setelah daftar berhasil, modal biasanya akan otomatis pindah ke mode login
+      } else {
+        toast.error(data.message || 'Registrasi gagal');
+      }
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      toast.error('Terjadi kesalahan koneksi saat mendaftar');
+    }
+  };
+
+  // 3. FUNGSI LOGOUT
   const handleLogout = () => {
     localStorage.clear();
     setUserRole('guest');
     setUserData(null);
     setFilterSaran(null);
+    setCurrentView('recommendation');
     toast.success('Berhasil keluar');
   };
 
@@ -61,12 +90,15 @@ function App() {
     <>
       <Toaster position="top-center" reverseOrder={false} />
       
-      {/* 1. JIKA BELUM LOGIN */}
+      {/* JIKA BELUM LOGIN */}
       {userRole === 'guest' && (
-        <LandingPage onLoginAttempt={handleLogin} onRegisterAttempt={() => {}} />
+        <LandingPage 
+          onLoginAttempt={handleLogin} 
+          onRegisterAttempt={handleRegister} 
+        />
       )}
       
-      {/* 2. JIKA LOGIN SEBAGAI USER */}
+      {/* JIKA LOGIN SEBAGAI USER BIASA */}
       {userRole === 'user' && (
         <>
           {currentView === 'recommendation' ? (
@@ -90,7 +122,7 @@ function App() {
         </>
       )}
       
-      {/* 3. JIKA LOGIN SEBAGAI ADMIN */}
+      {/* JIKA LOGIN SEBAGAI ADMIN */}
       {userRole === 'admin' && (
         <AdminPage 
           onLogout={handleLogout} 
