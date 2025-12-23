@@ -3,21 +3,22 @@ import { Toaster, toast } from 'react-hot-toast';
 
 import MenuPage from './MenuPage';
 import AdminPage from './AdminPage';
-import LoginModal from './components/LoginModal'; // Pastikan import ini ada
+import LoginModal from './components/LoginModal';
 
 const API_URL = 'https://backend-warungku.vercel.app';
 
 function App() {
+  // Langsung set ke 'menu' agar saat buka web langsung ke produk
+  const [currentView, setCurrentView] = useState('menu');
   const [userRole, setUserRole] = useState(() => localStorage.getItem('userRole') || 'guest');
   const [userData, setUserData] = useState(() => {
     const savedData = localStorage.getItem('userData');
     return savedData ? JSON.parse(savedData) : null;
   });
 
-  // State untuk mengontrol pop-up login
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // 1. FUNGSI LOGIN
+  // FUNGSI LOGIN
   const handleLogin = async (email, password) => {
     const loadingToast = toast.loading('Sedang masuk...');
     try {
@@ -36,7 +37,7 @@ function App() {
         
         setUserRole(data.user.role);
         setUserData(data.user);
-        setIsLoginModalOpen(false); // Tutup modal setelah login berhasil
+        setIsLoginModalOpen(false);
         toast.success(`Selamat datang, ${data.user.name}!`); 
       } else {
         toast.error(data.message || 'Login gagal'); 
@@ -47,7 +48,7 @@ function App() {
     }
   };
 
-  // 2. FUNGSI REGISTRASI
+  // FUNGSI REGISTRASI
   const handleRegister = async (registrationData) => {
     const loadingToast = toast.loading('Mendaftarkan akun...');
     try {
@@ -70,18 +71,19 @@ function App() {
     }
   };
 
+  // FUNGSI LOGOUT (PENTING: Tombol Keluar memicu ini)
   const handleLogout = () => {
     localStorage.clear();
     setUserRole('guest');
     setUserData(null);
+    setCurrentView('menu'); // Kembalikan ke menu setelah logout
     toast.success('Berhasil keluar');
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-50">
       <Toaster position="top-center" />
       
-      {/* LOGIN MODAL (Pop-up yang bisa dipicu dari mana saja) */}
       <LoginModal 
         isOpen={isLoginModalOpen} 
         onClose={() => setIsLoginModalOpen(false)}
@@ -89,21 +91,17 @@ function App() {
         onRegister={handleRegister}
       />
 
-      {/* TAMPILAN UNTUK USER & GUEST (Langsung ke Menu) */}
-      {(userRole === 'user' || userRole === 'guest') && (
+      {userRole === 'admin' ? (
+        <AdminPage onLogout={handleLogout} adminName={userData?.name} />
+      ) : (
         <MenuPage 
           userRole={userRole}
           userName={userData?.name}
           onLogout={handleLogout}
-          openLogin={() => setIsLoginModalOpen(true)} // Kirim fungsi untuk buka modal
+          openLogin={() => setIsLoginModalOpen(true)}
         />
       )}
-      
-      {/* TAMPILAN KHUSUS ADMIN */}
-      {userRole === 'admin' && (
-        <AdminPage onLogout={handleLogout} adminName={userData?.name} />
-      )}
-    </>
+    </div>
   );
 }
 
