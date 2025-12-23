@@ -8,8 +8,6 @@ import LoginModal from './components/LoginModal';
 const API_URL = 'https://backend-warungku.vercel.app';
 
 function App() {
-  // Langsung set ke 'menu' agar saat buka web langsung ke produk
-  const [currentView, setCurrentView] = useState('menu');
   const [userRole, setUserRole] = useState(() => localStorage.getItem('userRole') || 'guest');
   const [userData, setUserData] = useState(() => {
     const savedData = localStorage.getItem('userData');
@@ -18,7 +16,7 @@ function App() {
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // FUNGSI LOGIN
+  // Fungsi Login
   const handleLogin = async (email, password) => {
     const loadingToast = toast.loading('Sedang masuk...');
     try {
@@ -38,9 +36,9 @@ function App() {
         setUserRole(data.user.role);
         setUserData(data.user);
         setIsLoginModalOpen(false);
-        toast.success(`Selamat datang, ${data.user.name}!`); 
+        toast.success(`Selamat datang kembali, ${data.user.name}!`); 
       } else {
-        toast.error(data.message || 'Login gagal'); 
+        toast.error(data.message || 'Email atau password salah'); 
       }
     } catch (error) {
       toast.dismiss(loadingToast);
@@ -48,9 +46,9 @@ function App() {
     }
   };
 
-  // FUNGSI REGISTRASI
+  // Fungsi Registrasi
   const handleRegister = async (registrationData) => {
-    const loadingToast = toast.loading('Mendaftarkan akun...');
+    const loadingToast = toast.loading('Memproses pendaftaran...');
     try {
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
@@ -61,23 +59,22 @@ function App() {
       toast.dismiss(loadingToast);
 
       if (response.ok) {
-        toast.success('Registrasi berhasil! Silakan masuk.');
+        toast.success('Pendaftaran berhasil! Silakan login.');
       } else {
-        toast.error(data.message || 'Registrasi gagal');
+        toast.error(data.message || 'Gagal mendaftar');
       }
     } catch (error) {
       toast.dismiss(loadingToast);
-      toast.error('Terjadi kesalahan koneksi');
+      toast.error('Gagal menghubungi server');
     }
   };
 
-  // FUNGSI LOGOUT (PENTING: Tombol Keluar memicu ini)
+  // Fungsi Logout (Tombol Keluar)
   const handleLogout = () => {
     localStorage.clear();
     setUserRole('guest');
     setUserData(null);
-    setCurrentView('menu'); // Kembalikan ke menu setelah logout
-    toast.success('Berhasil keluar');
+    toast.success('Anda telah keluar');
   };
 
   return (
