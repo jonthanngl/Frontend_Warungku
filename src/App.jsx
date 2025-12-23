@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast'; 
 
-import LandingPage from './LandingPage';
 import MenuPage from './MenuPage';
 import AdminPage from './AdminPage';
-import RecommendationPage from './RecommendationPage'; 
+import LoginModal from './components/LoginModal'; // Pastikan import ini ada
 
-// Pastikan URL ini sesuai dengan backend Anda
 const API_URL = 'https://backend-warungku.vercel.app';
 
 function App() {
@@ -16,9 +14,8 @@ function App() {
     return savedData ? JSON.parse(savedData) : null;
   });
 
-  // State untuk navigasi tampilan
-  const [currentView, setCurrentView] = useState('recommendation');
-  const [filterSaran, setFilterSaran] = useState(null);
+  // State untuk mengontrol pop-up login
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // 1. FUNGSI LOGIN
   const handleLogin = async (email, password) => {
@@ -33,15 +30,13 @@ function App() {
       toast.dismiss(loadingToast);
 
       if (response.ok) {
-        // Simpan token dan data ke localStorage agar bisa dipakai fitur Riwayat
         localStorage.setItem('userToken', data.token); 
         localStorage.setItem('userRole', data.user.role);
         localStorage.setItem('userData', JSON.stringify(data.user));
         
         setUserRole(data.user.role);
         setUserData(data.user);
-        setCurrentView('recommendation'); 
-        
+        setIsLoginModalOpen(false); // Tutup modal setelah login berhasil
         toast.success(`Selamat datang, ${data.user.name}!`); 
       } else {
         toast.error(data.message || 'Login gagal'); 
@@ -52,7 +47,7 @@ function App() {
     }
   };
 
-  // 2. FUNGSI REGISTRASI (Perbaikan untuk tombol daftar)
+  // 2. FUNGSI REGISTRASI
   const handleRegister = async (registrationData) => {
     const loadingToast = toast.loading('Mendaftarkan akun...');
     try {
@@ -65,69 +60,48 @@ function App() {
       toast.dismiss(loadingToast);
 
       if (response.ok) {
-        toast.success('Registrasi berhasil! Silakan masuk dengan akun baru Anda.');
-        // Setelah daftar berhasil, modal biasanya akan otomatis pindah ke mode login
+        toast.success('Registrasi berhasil! Silakan masuk.');
       } else {
         toast.error(data.message || 'Registrasi gagal');
       }
     } catch (error) {
       toast.dismiss(loadingToast);
-      toast.error('Terjadi kesalahan koneksi saat mendaftar');
+      toast.error('Terjadi kesalahan koneksi');
     }
   };
 
-  // 3. FUNGSI LOGOUT
   const handleLogout = () => {
     localStorage.clear();
     setUserRole('guest');
     setUserData(null);
-    setFilterSaran(null);
-    setCurrentView('recommendation');
     toast.success('Berhasil keluar');
   };
 
   return (
     <>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster position="top-center" />
       
-      {/* JIKA BELUM LOGIN */}
-      {userRole === 'guest' && (
-        <LandingPage 
-          onLoginAttempt={handleLogin} 
-          onRegisterAttempt={handleRegister} 
+      {/* LOGIN MODAL (Pop-up yang bisa dipicu dari mana saja) */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)}
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+      />
+
+      {/* TAMPILAN UNTUK USER & GUEST (Langsung ke Menu) */}
+      {(userRole === 'user' || userRole === 'guest') && (
+        <MenuPage 
+          userRole={userRole}
+          userName={userData?.name}
+          onLogout={handleLogout}
+          openLogin={() => setIsLoginModalOpen(true)} // Kirim fungsi untuk buka modal
         />
       )}
       
-      {/* JIKA LOGIN SEBAGAI USER BIASA */}
-      {userRole === 'user' && (
-        <>
-          {currentView === 'recommendation' ? (
-            <RecommendationPage 
-              onSelectCategory={(cat) => {
-                setFilterSaran(cat);
-                setCurrentView('menu');
-              }}
-              onSkip={() => {
-                setFilterSaran(null);
-                setCurrentView('menu');
-              }}
-            />
-          ) : (
-            <MenuPage 
-              onLogout={handleLogout} 
-              userName={userData?.name} 
-              initialFilter={filterSaran} 
-            />
-          )}
-        </>
-      )}
-      
-      {/* JIKA LOGIN SEBAGAI ADMIN */}
+      {/* TAMPILAN KHUSUS ADMIN */}
       {userRole === 'admin' && (
-        <AdminPage 
-          onLogout={handleLogout} 
-          adminName={userData?.name} 
-        />
+        <AdminPage onLogout={handleLogout} adminName={userData?.name} />
       )}
     </>
   );
