@@ -3,19 +3,43 @@ import { toast } from 'react-hot-toast';
 
 const API_URL = 'https://backend-warungku.vercel.app';
 
-const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, onConfirmOrder }) => {
+// Tambahkan props userRole dan openLogin untuk menangani proteksi login
+const CartView = ({ 
+  cart, 
+  totalPrice, 
+  onBack, 
+  onIncrease, 
+  onDecrease, 
+  onRemove, 
+  onConfirmOrder, 
+  userRole, 
+  openLogin 
+}) => {
   const [formData, setFormData] = useState({ name: '', whatsapp: '', address: '', notes: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Mengambil data user yang tersimpan jika sudah login
   useEffect(() => {
     const storedData = localStorage.getItem('userData');
     if (storedData) {
       const user = JSON.parse(storedData);
-      setFormData(f => ({ ...f, name: user.name || '', whatsapp: user.phone_number || '' }));
+      setFormData(f => ({ 
+        ...f, 
+        name: user.name || '', 
+        whatsapp: user.phone_number || '' 
+      }));
     }
   }, []);
 
   const handleSubmit = async () => {
+    // 1. LOGIKA PROTEKSI LOGIN
+    if (userRole === 'guest') {
+      toast.error("Wah, dikit lagi! Masuk akun dulu ya untuk konfirmasi pesanan.");
+      openLogin(); // Memicu pop-up login muncul
+      return;
+    }
+
+    // 2. VALIDASI FORM
     if (!formData.name || !formData.whatsapp || !formData.address) {
       return toast.error("Lengkapi data pengiriman Anda!");
     }
@@ -33,13 +57,17 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
           cart_items: cart.map(i => ({ id: i.id, qty: i.qty, price: i.price }))
         }),
       });
+      
       const result = await response.json();
+      
       if (response.ok) {
         onConfirmOrder(result.transaction_code);
         toast.success("Pesanan berhasil dibuat!");
+      } else {
+        toast.error(result.message || "Gagal membuat pesanan");
       }
     } catch (e) {
-      toast.error("Gagal mengirim pesanan.");
+      toast.error("Gagal mengirim pesanan. Periksa koneksi internet Anda.");
     } finally {
       setIsSubmitting(false);
     }
@@ -51,26 +79,35 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
         
         {/* Kolom Kiri: Daftar Pesanan */}
         <div className="lg:col-span-7">
-          <button onClick={onBack} className="flex items-center gap-2 text-gray-500 font-bold mb-6 hover:text-warung-primary transition-colors">
+          <button 
+            onClick={onBack} 
+            className="flex items-center gap-2 text-gray-500 font-bold mb-6 hover:text-warung-primary transition-colors"
+          >
             ← Kembali Belanja
           </button>
           <h2 className="text-3xl font-black mb-8">Keranjang <span className="text-warung-primary">Saya</span></h2>
           
           <div className="space-y-4">
-            {cart.map(item => (
-              <div key={item.id} className="bg-white p-4 rounded-[2rem] shadow-premium flex items-center gap-4">
-                <img src={item.image_url} className="w-20 h-20 rounded-2xl object-cover" alt="" />
-                <div className="flex-1">
-                  <h4 className="font-bold text-gray-800">{item.name}</h4>
-                  <p className="text-sm text-warung-primary font-bold">Rp {item.price.toLocaleString()}</p>
-                </div>
-                <div className="flex items-center gap-3 bg-gray-50 p-1 rounded-full border">
-                  <button onClick={() => onDecrease(item.id)} className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm font-bold">-</button>
-                  <span className="font-bold text-sm w-4 text-center">{item.qty}</span>
-                  <button onClick={() => onIncrease(item.id)} className="w-8 h-8 flex items-center justify-center bg-warung-primary text-white rounded-full shadow-sm font-bold">+</button>
-                </div>
+            {cart.length === 0 ? (
+              <div className="text-center py-20 bg-white rounded-[2.5rem] shadow-premium">
+                <p className="text-gray-400 font-bold">Keranjangmu masih kosong nih...</p>
               </div>
-            ))}
+            ) : (
+              cart.map(item => (
+                <div key={item.id} className="bg-white p-4 rounded-[2rem] shadow-premium flex items-center gap-4">
+                  <img src={item.image_url} className="w-20 h-20 rounded-2xl object-cover" alt={item.name} />
+                  <div className="flex-1">
+                    <h4 className="font-bold text-gray-800">{item.name}</h4>
+                    <p className="text-sm text-warung-primary font-bold">Rp {item.price.toLocaleString()}</p>
+                  </div>
+                  <div className="flex items-center gap-3 bg-gray-50 p-1 rounded-full border">
+                    <button onClick={() => onDecrease(item.id)} className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm font-bold">-</button>
+                    <span className="font-bold text-sm w-4 text-center">{item.qty}</span>
+                    <button onClick={() => onIncrease(item.id)} className="w-8 h-8 flex items-center justify-center bg-warung-primary text-white rounded-full shadow-sm font-bold">+</button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -78,6 +115,7 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
         <div className="lg:col-span-5">
           <div className="bg-white p-8 rounded-[2.5rem] shadow-premium sticky top-10">
             <h3 className="text-xl font-black mb-6 border-b pb-4">Detail Pengiriman</h3>
+            
             <div className="space-y-4 mb-8">
               <input 
                 type="text" placeholder="Nama Lengkap" 
@@ -112,12 +150,18 @@ const CartView = ({ cart, totalPrice, onBack, onIncrease, onDecrease, onRemove, 
             </div>
 
             <button 
-              disabled={isSubmitting}
+              disabled={isSubmitting || cart.length === 0}
               onClick={handleSubmit}
-              className="w-full bg-warung-dark text-white py-5 rounded-3xl font-black text-lg hover:bg-warung-primary transition-all active:scale-95 shadow-xl disabled:bg-gray-300"
+              className="w-full bg-warung-dark text-white py-5 rounded-3xl font-black text-lg hover:bg-warung-primary transition-all active:scale-95 shadow-xl disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Memproses...' : 'Konfirmasi & Bayar'}
+              {isSubmitting ? 'Memproses...' : (userRole === 'guest' ? 'Masuk untuk Bayar' : 'Konfirmasi & Bayar')}
             </button>
+            
+            {userRole === 'guest' && (
+              <p className="text-center text-xs text-gray-400 mt-4 px-4">
+                * Kamu tetap bisa menambahkan item ke keranjang sebagai Tamu, tapi login diperlukan untuk tahap pembayaran.
+              </p>
+            )}
           </div>
         </div>
       </div>
