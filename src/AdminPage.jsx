@@ -3,24 +3,22 @@ import { toast } from 'react-hot-toast';
 
 const API_URL = 'https://backend-warungku.vercel.app';
 
-// --- KOMPONEN NAVIGASI (Diletakkan di luar agar stabil) ---
-const NavLink = ({ active, onClick, label, icon }) => (
-    <button 
-        onClick={onClick} 
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-sm font-medium
-        ${active 
-            ? 'bg-white text-slate-900 shadow-sm' 
-            : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
-    >
-        <span>{icon}</span> {label}
-    </button>
-);
+// --- HELPER: FORMAT RUPIAH ---
+const formatRupiah = (number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(number);
+};
 
+// --- HELPER: AUTH HEADER (DIPERBAIKI) ---
 const getAuthHeaders = () => {
-    const token = localStorage.getItem('userToken');
+    // Cek kedua kemungkinan nama token
+    const token = localStorage.getItem('token') || localStorage.getItem('userToken');
+    
     if (!token) {
-        toast.error("Sesi berakhir, silakan login ulang.");
-        return {}; 
+        return null; 
     }
     return {
         'Content-Type': 'application/json',
@@ -29,494 +27,380 @@ const getAuthHeaders = () => {
 };
 
 const AdminPage = ({ onLogout, adminName }) => {
-  const [activeMenu, setActiveMenu] = useState('dashboard'); 
+  const [activeMenu, setActiveMenu] = useState('orders'); 
   const [menuItems, setMenuItems] = useState([]);
   const [orders, setOrders] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [salesData, setSalesData] = useState(null); 
-  const [loadingSales, setLoadingSales] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
+  
+  // Filter Tab untuk Orderan
+  const [orderFilter, setOrderFilter] = useState('Menunggu Konfirmasi'); 
 
+  // State Modal Tambah Menu
   const [showAddModal, setShowAddModal] = useState(false);
   const [newItem, setNewItem] = useState({
     name: '', category: 'Makanan', price: '', description: '', image: null
   });
 
+  // --- FETCH DATA ---
   const fetchData = async () => {
     setLoading(true);
     const authHeaders = getAuthHeaders(); 
+    
+    if (!authHeaders) {
+        toast.error("Sesi habis, silakan login lagi");
+        onLogout();
+        return;
+    }
+
     try {
+      // 1. Ambil Menu
       const menuRes = await fetch(`${API_URL}/api/menu`);
       const menuData = await menuRes.json();
       setMenuItems(menuData);
 
-      const orderRes = await fetch(`${API_URL}/api/orders`, {
-          headers: { 'Authorization': authHeaders.Authorization } 
-      });
-      if (orderRes.status === 401 || orderRes.status === 403) {
-          onLogout(); 
+      // 2. Ambil Order
+      const orderRes = await fetch(`${API_URL}/api/orders`, { headers: authHeaders });
+      if (orderRes.status === 401) {
+          onLogout();
           return;
       }
       const orderData = await orderRes.json();
-      setOrders(orderData);
+      // Urutkan: Orderan terbaru di atas
+      setOrders(orderData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+      
       setLoading(false); 
     } catch (error) {
-      console.error("Gagal ambil data:", error);
-      toast.error("Gagal mengambil data server");
+      console.error("Fetch Error:", error);
       setLoading(false);
     }
   };
 
   const fetchSalesData = async () => {
-      setLoadingSales(true);
       const authHeaders = getAuthHeaders();
-      if (!authHeaders.Authorization) {
-          setLoadingSales(false);
-          return;
-      }
+      if (!authHeaders) return;
+
       try {
-          const response = await fetch(`${API_URL}/api/dashboard/sales`, {
-              headers: { 'Authorization': authHeaders.Authorization }
-          });
-          if (response.status === 401 || response.status === 403) {
-              onLogout(); 
-              return;
+          const response = await fetch(`${API_URL}/api/dashboard/sales`, { headers: authHeaders });
+          if (response.ok) {
+              const data = await response.json();
+              setSalesData(data);
           }
-          const data = await response.json();
-          setSalesData(data);
       } catch (error) {
-          console.error("Gagal ambil data sales:", error);
-      } finally {
-          setLoadingSales(false);
+          console.error("Sales Error:", error);
       }
   };
 
   useEffect(() => { 
       fetchData(); 
       fetchSalesData(); 
+      const interval = setInterval(fetchData, 15000); // Auto refresh tiap 15 detik
+      return () => clearInterval(interval);
   }, []);
 
-  const handleAddItem = async (e) => {
-    e.preventDefault();
-    if (!newItem.name || !newItem.price || !newItem.description || !newItem.image) {
-        toast.error("Semua kolom wajib diisi.");
-        return; 
-    }
-    const loadingToast = toast.loading('Menyimpan menu...');
-    const token = localStorage.getItem('userToken'); 
-    
-    const formData = new FormData();
-    formData.append('name', newItem.name);
-    formData.append('category', newItem.category);
-    formData.append('price', newItem.price);
-    formData.append('description', newItem.description);
-    if (newItem.image) formData.append('image', newItem.image);
-
-    try {
-        const response = await fetch(`${API_URL}/api/menu`, { 
-            method: 'POST', 
-            headers: { 'Authorization': `Bearer ${token}` },
-            body: formData 
-        });
-        toast.dismiss(loadingToast);
-        if (response.ok) {
-            toast.success("Menu berhasil ditambahkan"); 
-            setShowAddModal(false);
-            setNewItem({ name: '', category: 'Makanan', price: '', description: '', image: null });
-            fetchData();
-        } else {
-            toast.error("Gagal menambah menu"); 
-        }
-    } catch (error) { 
-        toast.dismiss(loadingToast);
-        toast.error("Gagal terhubung ke server"); 
-    }
-  };
-
-  const toggleAvailability = async (item) => {
-    const authHeaders = getAuthHeaders(); 
-    if (!authHeaders.Authorization) return; 
-    try {
-      const updatedStatus = !item.is_available;
-      const response = await fetch(`${API_URL}/api/menu/${item.id}`, {
-        method: 'PUT',
-        headers: authHeaders, 
-        body: JSON.stringify({ ...item, is_available: updatedStatus })
-      });
-      if (response.ok) {
-        setMenuItems(menuItems.map(m => m.id === item.id ? { ...m, is_available: updatedStatus } : m));
-        toast.success(`Status menu diperbarui`);
-      }
-    } catch (error) { toast.error("Gagal update status"); }
-  };
-
-  const handleDeleteMenu = async (id) => {
-    const authHeaders = getAuthHeaders(); 
-    if (!authHeaders.Authorization) return; 
-    if (window.confirm("Yakin ingin menghapus menu ini?")) {
-      const loadingToast = toast.loading('Menghapus...');
-      try {
-        const response = await fetch(`${API_URL}/api/menu/${id}`, { 
-            method: 'DELETE',
-            headers: authHeaders 
-        });
-        toast.dismiss(loadingToast);
-        if (response.ok) {
-            setMenuItems(menuItems.filter(item => item.id !== id));
-            toast.success("Menu dihapus");
-        } else {
-            toast.error("Gagal menghapus");
-        }
-      } catch (error) { 
-        toast.dismiss(loadingToast);
-        toast.error("Error server"); 
-      }
-    }
-  };
-
+  // --- ACTIONS ---
   const updateOrderStatus = async (id, newStatus) => {
-    const loadingToast = toast.loading('Memproses...');
-    const authHeaders = getAuthHeaders(); 
+    const authHeaders = getAuthHeaders();
+    // Optimistic Update (Biar terasa cepat di layar)
+    setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
+    
     try {
-        const response = await fetch(`${API_URL}/api/orders/${id}`, {
+        await fetch(`${API_URL}/api/orders/${id}`, {
             method: 'PUT',
             headers: authHeaders,
             body: JSON.stringify({ status: newStatus })
         });
-        toast.dismiss(loadingToast);
-        if (response.ok) {
-            setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-            toast.success(`Pesanan: ${newStatus}`);
-            if (newStatus === 'Selesai') fetchSalesData(); 
-        }
-    } catch (error) { 
-        toast.dismiss(loadingToast);
-        toast.error("Gagal update status"); 
+        toast.success(`Status diubah: ${newStatus}`);
+        if(newStatus === 'Selesai') fetchSalesData();
+    } catch (error) {
+        toast.error("Gagal update status");
+        fetchData(); // Rollback jika gagal
     }
   };
 
-  // --- VIEW DASHBOARD ---
-  const DashboardView = () => {
-    if (loadingSales) return <div className="p-8 text-gray-500">Memuat data...</div>;
-    if (!salesData) return <div className="p-8 text-red-500">Data tidak tersedia.</div>;
-
-    const formatRupiah = (num) => `Rp ${parseFloat(num).toLocaleString('id-ID')}`;
-
-    return (
-        <div className="space-y-6 animate-fade-in">
-            <h3 className="text-xl font-bold text-gray-800">Ringkasan Penjualan</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Pendapatan Total</p>
-                    <h4 className="text-3xl font-bold text-gray-800 mt-2">{formatRupiah(salesData.total_sales)}</h4>
-                    <p className="text-xs text-green-600 mt-1 font-medium">dari pesanan selesai</p>
-                </div>
-                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Pesanan Selesai</p>
-                    <h4 className="text-3xl font-bold text-gray-800 mt-2">{salesData.total_completed_orders} <span className="text-sm text-gray-400 font-normal">TransaksI</span></h4>
-                </div>
-                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Menu Aktif</p>
-                    <h4 className="text-3xl font-bold text-gray-800 mt-2">{menuItems.filter(m => m.is_available).length} <span className="text-sm text-gray-400 font-normal">Item</span></h4>
-                </div>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                <h4 className="font-bold text-gray-800 mb-6">Grafik Pendapatan (7 Hari Terakhir)</h4>
-                <div className="flex items-end space-x-2 h-48 pt-4 border-b border-gray-200">
-                    {salesData.daily_data.length === 0 ? (
-                        <p className="w-full text-center text-gray-400 text-sm">Belum ada data transaksi minggu ini.</p>
-                    ) : (
-                        salesData.daily_data.map((data, index) => {
-                            const heightPercent = (parseFloat(data.revenue) / (salesData.total_sales || 1)) * 100 * 2; 
-                            const safeHeight = heightPercent > 100 ? 100 : (heightPercent < 5 && parseFloat(data.revenue) > 0 ? 5 : heightPercent);
-                            
-                            return (
-                            <div key={index} className="flex-1 flex flex-col items-center group relative">
-                                <div className="absolute bottom-full mb-2 bg-gray-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10">
-                                    {formatRupiah(data.revenue)}
-                                </div>
-                                <div 
-                                    className="w-full max-w-[40px] bg-red-600 rounded-t-sm hover:bg-opacity-80 transition-all duration-500" 
-                                    style={{ height: `${safeHeight}%` }} 
-                                ></div>
-                                <span className="mt-3 text-xs text-gray-500 font-medium">
-                                    {new Date(data.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                                </span>
-                            </div>
-                        )})
-                    )}
-                </div>
-            </div>
-        </div>
-    );
+  const handleDeleteMenu = async (id) => {
+      if(!window.confirm("Hapus menu ini?")) return;
+      const authHeaders = getAuthHeaders();
+      try {
+          await fetch(`${API_URL}/api/menu/${id}`, { method: 'DELETE', headers: authHeaders });
+          setMenuItems(prev => prev.filter(m => m.id !== id));
+          toast.success("Menu dihapus");
+      } catch(e) { toast.error("Gagal hapus"); }
   };
 
+  const toggleAvailability = async (item) => {
+      const authHeaders = getAuthHeaders();
+      try {
+          await fetch(`${API_URL}/api/menu/${item.id}`, {
+              method: 'PUT',
+              headers: authHeaders,
+              body: JSON.stringify({ ...item, is_available: !item.is_available })
+          });
+          setMenuItems(prev => prev.map(m => m.id === item.id ? {...m, is_available: !m.is_available} : m));
+          toast.success("Status menu diubah");
+      } catch(e) { toast.error("Gagal update"); }
+  };
+
+  const handleAddMenu = async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('token') || localStorage.getItem('userToken');
+      const formData = new FormData();
+      Object.keys(newItem).forEach(key => formData.append(key, newItem[key]));
+
+      const loadingToast = toast.loading("Upload menu...");
+      try {
+          const res = await fetch(`${API_URL}/api/menu`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}` },
+              body: formData
+          });
+          toast.dismiss(loadingToast);
+          if(res.ok) {
+              toast.success("Menu berhasil ditambah!");
+              setShowAddModal(false);
+              setNewItem({ name: '', category: 'Makanan', price: '', description: '', image: null });
+              fetchData();
+          } else {
+              toast.error("Gagal menambah menu");
+          }
+      } catch(e) { 
+          toast.dismiss(loadingToast);
+          toast.error("Error server"); 
+      }
+  };
+
+  // --- SUB-COMPONENTS (Agar Rapi) ---
+  const SidebarItem = ({ id, label, icon, count }) => (
+      <button 
+          onClick={() => { setActiveMenu(id); setIsSidebarOpen(false); }}
+          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl mb-1 transition-all ${
+              activeMenu === id 
+              ? 'bg-red-600 text-white shadow-lg shadow-red-200' 
+              : 'text-gray-500 hover:bg-red-50 hover:text-red-600'
+          }`}
+      >
+          <div className="flex items-center gap-3 font-bold text-sm">
+              <span>{icon}</span> {label}
+          </div>
+          {count > 0 && <span className="bg-red-100 text-red-600 text-[10px] px-2 py-0.5 rounded-full font-bold">{count}</span>}
+      </button>
+  );
+
   return (
-    <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
+    <div className="flex h-screen bg-[#F8F9FA] font-sans overflow-hidden">
       
-      {/* Mobile Sidebar Overlay */}
-      {isSidebarOpen && (
-        <div 
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
+      {/* SIDEBAR */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 transform transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 flex flex-col`}>
+          <div className="p-8 pb-4">
+              <h1 className="text-2xl font-black text-gray-800 tracking-tighter flex items-center gap-2">
+                  <span className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center">W</span>
+                  WarungKu<span className="text-red-600">.</span>
+              </h1>
+              <p className="text-xs text-gray-400 mt-2 font-bold tracking-widest uppercase pl-10">Admin Dashboard</p>
+          </div>
 
-      {/* SIDEBAR - Background slate-900 agar pasti terlihat */}
-      <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white shadow-xl flex flex-col transition-transform duration-300
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
-        md:relative md:translate-x-0
-      `}>
-        <div className="p-6 border-b border-white/10">
-            <h1 className="font-bold text-xl tracking-wide">WARUNGKU<span className="text-red-500">.</span></h1>
-            <p className="text-xs text-white/50 mt-1 uppercase tracking-widest">Admin Panel</p>
-        </div>
+          <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+              <SidebarItem id="dashboard" label="Ringkasan" icon="" />
+              <SidebarItem id="orders" label="Pesanan Masuk" icon="" count={orders.filter(o => o.status === 'Menunggu Konfirmasi').length} />
+              <SidebarItem id="menu" label="Kelola Menu" icon="" />
+          </nav>
 
-        <nav className="flex-1 py-6 px-3 space-y-1">
-            <NavLink 
-                active={activeMenu === 'dashboard'} 
-                onClick={() => { setActiveMenu('dashboard'); setIsSidebarOpen(false); }} 
-                label="Dashboard" 
-                icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>}
-            />
-            <NavLink 
-                active={activeMenu === 'orders'} 
-                onClick={() => { setActiveMenu('orders'); setIsSidebarOpen(false); }} 
-                label="Daftar Pesanan" 
-                icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>}
-            />
-            <NavLink 
-                active={activeMenu === 'menu'} 
-                onClick={() => { setActiveMenu('menu'); setIsSidebarOpen(false); }} 
-                label="Manajemen Menu" 
-                icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>}
-            />
-        </nav>
-        
-        <div className="p-4 border-t border-white/10">
-            <button 
-                onClick={onLogout} 
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-red-600/90 text-white hover:bg-red-600 transition text-sm font-medium shadow-sm"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg> 
-                Keluar
-            </button>
-        </div>
+          <div className="p-4 border-t border-gray-100">
+              <div className="flex items-center gap-3 mb-4 px-2">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-lg font-bold text-gray-600">
+                      {adminName ? adminName.charAt(0) : 'A'}
+                  </div>
+                  <div>
+                      <p className="text-sm font-bold text-gray-800">{adminName || 'Admin'}</p>
+                      <p className="text-xs text-green-500 font-bold">● Online</p>
+                  </div>
+              </div>
+              <button onClick={onLogout} className="w-full bg-gray-100 text-gray-600 py-3 rounded-xl text-sm font-bold hover:bg-red-50 hover:text-red-600 transition">
+                  Keluar Akun
+              </button>
+          </div>
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 overflow-y-auto p-4 md:p-8 w-full relative z-0">
-        <header className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-4">
-                <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 bg-white rounded-md shadow-sm text-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-                </button>
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-800">
-                        {activeMenu === 'dashboard' ? 'Overview' : 
-                         activeMenu === 'orders' ? 'Pesanan Masuk' : 'Daftar Menu'}
-                    </h2>
-                    <p className="text-sm text-gray-500 hidden md:block">Kelola warung Anda dengan mudah.</p>
-                </div>
-            </div>
-        </header>
-        
-        {activeMenu === 'dashboard' && <DashboardView />}
+      <main className="flex-1 overflow-y-auto relative w-full">
+          {/* Header Mobile */}
+          <div className="md:hidden bg-white p-4 flex justify-between items-center shadow-sm sticky top-0 z-30">
+              <h2 className="font-bold text-lg">Admin Panel</h2>
+              <button onClick={() => setIsSidebarOpen(true)} className="p-2 bg-gray-100 rounded-lg">☰</button>
+          </div>
 
-        {(activeMenu === 'orders' || activeMenu === 'menu') && (
-            loading && menuItems.length === 0 ? (
-                <div className="flex items-center justify-center h-64 text-gray-400">Memuat data...</div>
-            ) : (
-              <>
-                {activeMenu === 'orders' && (
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
-                    <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                        <h3 className="font-bold text-gray-700">Transaksi Terbaru</h3>
-                        <button onClick={fetchData} className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium">
-                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg> Segarkan
-                        </button>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left min-w-[900px]">
-                            <thead className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider font-semibold border-b border-gray-200">
-                                <tr>
-                                    <th className="p-4">ID Transaksi</th>
-                                    <th className="p-4">Waktu</th>
-                                    <th className="p-4">Pelanggan</th>
-                                    <th className="p-4 w-1/4">Detail Pesanan</th>
-                                    <th className="p-4">Total</th>
-                                    <th className="p-4">Status</th>
-                                    <th className="p-4 text-center">Tindakan</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {orders.map((order) => (
-                                    <tr key={order.id} className="hover:bg-gray-50/80 transition-colors text-sm text-gray-700">
-                                        <td className="p-4 font-mono font-medium text-blue-600">{order.transaction_code}</td>
-                                        <td className="p-4">
-                                            <div className="font-medium">{new Date(order.created_at).toLocaleDateString('id-ID')}</div>
-                                            <div className="text-xs text-gray-400 mt-0.5">{new Date(order.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</div>
-                                        </td>
-                                        <td className="p-4 font-medium">{order.customer_name}</td>
-                                        <td className="p-4">
-                                            <div className="bg-gray-50 p-2 rounded border border-gray-100 text-xs leading-relaxed text-gray-600 max-w-xs">
-                                                {order.menu_items}
-                                            </div>
-                                        </td>
-                                        <td className="p-4 font-bold text-gray-900">Rp {parseInt(order.total_price).toLocaleString('id-ID')}</td>
-                                        <td className="p-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
-                                                order.status === 'Selesai' ? 'bg-green-50 text-green-600 border-green-100' :
-                                                order.status === 'Sedang Dimasak' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                                order.status === 'Dibatalkan' ? 'bg-red-50 text-red-600 border-red-100' :
-                                                'bg-yellow-50 text-yellow-600 border-yellow-100'
-                                            }`}>
-                                                {order.status}
-                                            </span>
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="flex justify-center gap-2">
-                                                {order.status === 'Menunggu Konfirmasi' && (
-                                                    <button onClick={() => updateOrderStatus(order.id, 'Sedang Dimasak')} className="bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 text-xs font-medium shadow-sm transition">
-                                                        Proses
-                                                    </button>
-                                                )}
-                                                {order.status === 'Sedang Dimasak' && (
-                                                    <button onClick={() => updateOrderStatus(order.id, 'Selesai')} className="bg-green-600 text-white px-3 py-1.5 rounded hover:bg-green-700 text-xs font-medium shadow-sm transition flex items-center gap-1">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Selesai
-                                                    </button>
-                                                )}
-                                                {(order.status === 'Selesai' || order.status === 'Dibatalkan') && (
-                                                    <span className="text-gray-400 text-xs">-</span>
-                                                )}
-                                                {order.status !== 'Selesai' && order.status !== 'Dibatalkan' && (
-                                                    <button onClick={() => updateOrderStatus(order.id, 'Dibatalkan')} className="text-red-500 hover:bg-red-50 px-2 py-1 rounded text-xs transition">
-                                                        Batal
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+          <div className="p-6 md:p-10 max-w-6xl mx-auto">
+              
+              {/* --- DASHBOARD VIEW --- */}
+              {activeMenu === 'dashboard' && salesData && (
+                  <div className="space-y-6 animate-fade-in">
+                      <h2 className="text-2xl font-black text-gray-800 mb-6">Ringkasan Penjualan</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div className="bg-gradient-to-br from-red-500 to-red-600 p-6 rounded-3xl text-white shadow-xl shadow-red-200">
+                              <p className="opacity-80 text-sm font-bold uppercase tracking-widest">Total Pendapatan</p>
+                              <h3 className="text-4xl font-black mt-2">{formatRupiah(salesData.total_sales)}</h3>
+                          </div>
+                          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4">
+                              <div className="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-xl">✅</div>
+                              <div>
+                                  <p className="text-gray-400 font-bold text-xs uppercase">Pesanan Selesai</p>
+                                  <h3 className="text-2xl font-black text-gray-800">{salesData.total_completed_orders}</h3>
+                              </div>
+                          </div>
+                          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4">
+                              <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-xl">📦</div>
+                              <div>
+                                  <p className="text-gray-400 font-bold text-xs uppercase">Menu Aktif</p>
+                                  <h3 className="text-2xl font-black text-gray-800">{menuItems.filter(m => m.is_available).length}</h3>
+                              </div>
+                          </div>
+                      </div>
                   </div>
-                )}
+              )}
 
-                {activeMenu === 'menu' && (
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
-                    <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                        <h3 className="font-bold text-gray-700">Katalog Menu</h3>
-                        <button onClick={() => setShowAddModal(true)} className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm hover:bg-red-700 transition flex items-center gap-2 text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg> Tambah Menu
-                        </button>
-                    </div>
-                    
-                    {/* MODAL TAMBAH MENU */}
-                    {showAddModal && (
-                        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4 backdrop-blur-sm">
-                            <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md animate-scale-up">
-                                <h3 className="text-lg font-bold mb-4 text-gray-800">Menu Baru</h3>
-                                <form onSubmit={handleAddItem} className="space-y-4">
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase">Nama Makanan</label>
-                                        <input type="text" required className="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-red-600 outline-none transition" 
-                                            value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} />
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Kategori</label>
-                                            <select className="w-full border border-gray-300 p-2.5 rounded-lg bg-white" value={newItem.category} onChange={e => setNewItem({...newItem, category: e.target.value})}>
-                                                <option>Makanan</option><option>Minuman</option><option>Cemilan</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-500 uppercase">Harga</label>
-                                            <input type="number" required className="w-full border border-gray-300 p-2.5 rounded-lg"
-                                                value={newItem.price} onChange={e => setNewItem({...newItem, price: e.target.value})} />
-                                        </div>
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase">Deskripsi</label>
-                                        <textarea className="w-full border border-gray-300 p-2.5 rounded-lg h-20"
-                                            value={newItem.description} onChange={e => setNewItem({...newItem, description: e.target.value})}></textarea>
-                                    </div>
-                                    
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Foto Menu</label>
-                                        <input type="file" accept="image/*" onChange={e => setNewItem({...newItem, image: e.target.files[0]})} className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"/>
-                                    </div>
+              {/* --- ORDERS VIEW (Card System) --- */}
+              {activeMenu === 'orders' && (
+                  <div className="animate-fade-in pb-20">
+                      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                          <h2 className="text-2xl font-black text-gray-800">Daftar Pesanan</h2>
+                          <div className="flex gap-2 bg-white p-1 rounded-xl shadow-sm border border-gray-200 overflow-x-auto w-full md:w-auto">
+                              {['Menunggu Konfirmasi', 'Sedang Dimasak', 'Selesai', 'Semua'].map(filter => (
+                                  <button 
+                                      key={filter}
+                                      onClick={() => setOrderFilter(filter)}
+                                      className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+                                          orderFilter === filter ? 'bg-gray-800 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'
+                                      }`}
+                                  >
+                                      {filter}
+                                  </button>
+                              ))}
+                          </div>
+                      </div>
 
-                                    <div className="flex gap-3 pt-4 border-t mt-4">
-                                        <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium text-sm">Batal</button>
-                                        <button type="submit" className="flex-1 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 shadow-lg text-sm transition">Simpan</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    )}
+                      <div className="grid grid-cols-1 gap-4">
+                          {orders
+                            .filter(o => orderFilter === 'Semua' ? true : o.status === orderFilter)
+                            .map(order => (
+                              <div key={order.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all flex flex-col md:flex-row gap-6">
+                                  {/* INFO UTAMA */}
+                                  <div className="flex-1">
+                                      <div className="flex items-center gap-3 mb-3">
+                                          <span className="bg-gray-100 text-gray-600 font-mono font-bold px-2 py-1 rounded text-xs">#{order.transaction_code}</span>
+                                          <span className="text-xs text-gray-400 font-bold">🕒 {new Date(order.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</span>
+                                          {order.status === 'Menunggu Konfirmasi' && <span className="bg-red-100 text-red-600 text-[10px] px-2 py-1 rounded-full font-bold animate-pulse">BARU</span>}
+                                      </div>
+                                      <h3 className="text-xl font-bold text-gray-900">{order.customer_name}</h3>
+                                      <p className="text-sm text-gray-500 mt-1 mb-3">{order.customer_address || 'Tanpa alamat'}</p>
+                                      
+                                      {/* Link WA */}
+                                      <a href={`https://wa.me/${order.customer_whatsapp?.replace(/^0/, '62')}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-green-100 transition">
+                                          <span>💬 Chat WA: {order.customer_whatsapp}</span>
+                                      </a>
+                                  </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left min-w-[700px]">
-                            <thead className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider font-semibold border-b border-gray-200">
-                                <tr>
-                                    <th className="p-5">Info Produk</th>
-                                    <th className="p-5">Harga</th>
-                                    <th className="p-5">Ketersediaan</th>
-                                    <th className="p-5 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {menuItems.map((item) => (
-                                    <tr key={item.id} className="hover:bg-gray-50/80 transition text-sm">
-                                        <td className="p-5 flex items-center gap-4">
-                                            <img 
-                                                src={item.image_url?.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`} 
-                                                alt={item.name} 
-                                                className="w-12 h-12 object-cover rounded-lg shadow-sm bg-gray-100" 
-                                            />
-                                            <div>
-                                                <div className="font-bold text-gray-800">{item.name}</div>
-                                                <div className="text-xs text-gray-500 mt-0.5 px-2 py-0.5 bg-gray-100 rounded-full inline-block">{item.category}</div>
-                                            </div>
-                                        </td>
-                                        <td className="p-5 font-bold text-gray-700">Rp {parseInt(item.price).toLocaleString('id-ID')}</td>
-                                        <td className="p-5">
-                                            <button 
-                                                onClick={() => toggleAvailability(item)} 
-                                                className={`px-3 py-1 rounded-full text-xs font-bold border transition shadow-sm ${
-                                                    item.is_available 
-                                                    ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100' 
-                                                    : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200'
-                                                }`}
-                                            >
-                                                {item.is_available ? 'Tersedia' : 'Habis'}
-                                            </button>
-                                        </td>
-                                        <td className="p-5 text-center">
-                                            <button 
-                                                onClick={() => handleDeleteMenu(item.id)} 
-                                                className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition"
-                                                title="Hapus Menu"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                  {/* DETAIL MENU */}
+                                  <div className="flex-[2] bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Pesanan</p>
+                                      <p className="text-sm font-medium text-gray-800 leading-relaxed whitespace-pre-wrap">{order.menu_items}</p>
+                                      <div className="mt-4 pt-3 border-t border-gray-200 flex justify-between items-center">
+                                          <span className="text-xs text-gray-500 font-bold">Total Harga</span>
+                                          <span className="text-lg font-black text-gray-900">Rp {parseInt(order.total_price).toLocaleString()}</span>
+                                      </div>
+                                  </div>
+
+                                  {/* ACTION BUTTONS */}
+                                  <div className="flex flex-col gap-2 justify-center min-w-[140px]">
+                                      {order.status === 'Menunggu Konfirmasi' && (
+                                          <>
+                                              <button onClick={() => updateOrderStatus(order.id, 'Sedang Dimasak')} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-100 transition transform hover:-translate-y-1">
+                                                  🔥 Masak
+                                              </button>
+                                              <button onClick={() => updateOrderStatus(order.id, 'Dibatalkan')} className="bg-white border border-red-100 text-red-500 font-bold py-2 rounded-xl hover:bg-red-50 text-xs">
+                                                  Tolak
+                                              </button>
+                                          </>
+                                      )}
+                                      {order.status === 'Sedang Dimasak' && (
+                                          <button onClick={() => updateOrderStatus(order.id, 'Selesai')} className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-100 transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                                              ✅ Selesai
+                                          </button>
+                                      )}
+                                      {(order.status === 'Selesai' || order.status === 'Dibatalkan') && (
+                                          <div className={`text-center py-2 px-4 rounded-xl font-bold text-sm ${order.status === 'Selesai' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                              {order.status}
+                                          </div>
+                                      )}
+                                  </div>
+                              </div>
+                          ))}
+                          {orders.filter(o => orderFilter === 'Semua' ? true : o.status === orderFilter).length === 0 && (
+                              <div className="text-center py-20 text-gray-400">Tidak ada pesanan di kategori ini.</div>
+                          )}
+                      </div>
                   </div>
-                )}
-              </>
-            )
-        )}
+              )}
+
+              {/* --- MENU MANAGEMENT VIEW --- */}
+              {activeMenu === 'menu' && (
+                  <div className="animate-fade-in pb-20">
+                      <div className="flex justify-between items-center mb-6">
+                          <h2 className="text-2xl font-black text-gray-800">Daftar Menu</h2>
+                          <button onClick={() => setShowAddModal(true)} className="bg-red-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-red-200 hover:bg-red-700 transition transform hover:scale-105">
+                              + Tambah Menu
+                          </button>
+                      </div>
+
+                      {/* Modal Tambah Menu */}
+                      {showAddModal && (
+                          <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50 p-4 backdrop-blur-sm">
+                              <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg">
+                                  <h3 className="text-xl font-black text-gray-800 mb-4">Menu Baru</h3>
+                                  <form onSubmit={handleAddMenu} className="space-y-4">
+                                      <input type="text" placeholder="Nama Menu" required className="w-full bg-gray-50 p-3 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-red-500" value={newItem.name} onChange={e=>setNewItem({...newItem, name:e.target.value})} />
+                                      <div className="grid grid-cols-2 gap-4">
+                                          <select className="bg-gray-50 p-3 rounded-xl border border-gray-200" value={newItem.category} onChange={e=>setNewItem({...newItem, category:e.target.value})}>
+                                              <option>Makanan</option><option>Minuman</option><option>Cemilan</option>
+                                          </select>
+                                          <input type="number" placeholder="Harga" required className="bg-gray-50 p-3 rounded-xl border border-gray-200" value={newItem.price} onChange={e=>setNewItem({...newItem, price:e.target.value})} />
+                                      </div>
+                                      <textarea placeholder="Deskripsi" className="w-full bg-gray-50 p-3 rounded-xl border border-gray-200 h-24" value={newItem.description} onChange={e=>setNewItem({...newItem, description:e.target.value})}></textarea>
+                                      <input type="file" onChange={e=>setNewItem({...newItem, image:e.target.files[0]})} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"/>
+                                      <div className="flex gap-3 pt-4">
+                                          <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 py-3 text-gray-500 font-bold hover:bg-gray-100 rounded-xl">Batal</button>
+                                          <button type="submit" className="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 shadow-lg">Simpan</button>
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
+                      )}
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {menuItems.map(item => (
+                              <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4 hover:shadow-md transition">
+                                  <img src={item.image_url} alt={item.name} className="w-20 h-20 bg-gray-200 rounded-xl object-cover" />
+                                  <div className="flex-1 flex flex-col justify-between">
+                                      <div>
+                                          <h4 className="font-bold text-gray-800 line-clamp-1">{item.name}</h4>
+                                          <p className="text-xs text-gray-500">{item.category}</p>
+                                      </div>
+                                      <div className="flex justify-between items-end mt-2">
+                                          <span className="font-black text-gray-800">Rp {parseInt(item.price).toLocaleString()}</span>
+                                          <div className="flex gap-2">
+                                              <button onClick={() => toggleAvailability(item)} className={`px-2 py-1 rounded-lg text-[10px] font-bold border ${item.is_available ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-500 border-red-200'}`}>
+                                                  {item.is_available ? 'Aktif' : 'Habis'}
+                                              </button>
+                                              <button onClick={() => handleDeleteMenu(item.id)} className="text-gray-300 hover:text-red-500">🗑️</button>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+              )}
+          </div>
       </main>
     </div>
   );

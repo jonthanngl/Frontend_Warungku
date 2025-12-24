@@ -3,9 +3,12 @@ import { Toaster, toast } from 'react-hot-toast';
 
 import MenuPage from './MenuPage';
 import AdminPage from './AdminPage';
-import LoginModal from './components/LoginModal';
+import RecommendationPage from './RecommendationPage'; 
+import LoginModal from './components/LoginModal'; 
+import LandingPage from './LandingPage'; 
+import HistoryView from './OrderHistory'; // <--- 1. IMPORT HISTORY VIEW
 
-const API_URL = 'https://backend-warungku.vercel.app';
+const API_URL = 'https://backend-warungku.vercel.app'; 
 
 function App() {
   const [userRole, setUserRole] = useState(() => localStorage.getItem('userRole') || 'guest');
@@ -14,9 +17,11 @@ function App() {
     return savedData ? JSON.parse(savedData) : null;
   });
 
+  const [currentView, setCurrentView] = useState('menu'); 
+  const [filterSaran, setFilterSaran] = useState(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // Fungsi Login
+  // --- FUNGSI LOGIN ---
   const handleLogin = async (email, password) => {
     const loadingToast = toast.loading('Sedang masuk...');
     try {
@@ -29,16 +34,17 @@ function App() {
       toast.dismiss(loadingToast);
 
       if (response.ok) {
-        localStorage.setItem('userToken', data.token); 
+        localStorage.setItem('token', data.token); // Simpan token dengan nama 'token' agar konsisten
         localStorage.setItem('userRole', data.user.role);
         localStorage.setItem('userData', JSON.stringify(data.user));
         
         setUserRole(data.user.role);
         setUserData(data.user);
-        setIsLoginModalOpen(false);
-        toast.success(`Selamat datang kembali, ${data.user.name}!`); 
+        setIsLoginModalOpen(false); 
+        setCurrentView('menu'); 
+        toast.success(`Selamat datang, ${data.user.name}!`); 
       } else {
-        toast.error(data.message || 'Email atau password salah'); 
+        toast.error(data.message || 'Login gagal'); 
       }
     } catch (error) {
       toast.dismiss(loadingToast);
@@ -46,9 +52,8 @@ function App() {
     }
   };
 
-  // Fungsi Registrasi
   const handleRegister = async (registrationData) => {
-    const loadingToast = toast.loading('Memproses pendaftaran...');
+    const loadingToast = toast.loading('Mendaftarkan akun...');
     try {
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
@@ -59,46 +64,76 @@ function App() {
       toast.dismiss(loadingToast);
 
       if (response.ok) {
-        toast.success('Pendaftaran berhasil! Silakan login.');
+        toast.success('Registrasi berhasil! Silakan login.');
       } else {
-        toast.error(data.message || 'Gagal mendaftar');
+        toast.error(data.message || 'Registrasi gagal');
       }
     } catch (error) {
       toast.dismiss(loadingToast);
-      toast.error('Gagal menghubungi server');
+      toast.error('Koneksi bermasalah');
     }
   };
 
-  // Fungsi Logout (Tombol Keluar)
   const handleLogout = () => {
     localStorage.clear();
     setUserRole('guest');
     setUserData(null);
-    toast.success('Anda telah keluar');
+    setFilterSaran(null);
+    setCurrentView('menu');
+    toast.success('Berhasil keluar');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Toaster position="top-center" />
-      
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+
+      {/* MODAL DISINI */}
       <LoginModal 
-        isOpen={isLoginModalOpen} 
+        isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
         onRegister={handleRegister}
       />
-
+      
+      {/* LOGIKA TAMPILAN */}
       {userRole === 'admin' ? (
         <AdminPage onLogout={handleLogout} adminName={userData?.name} />
       ) : (
-        <MenuPage 
-          userRole={userRole}
-          userName={userData?.name}
-          onLogout={handleLogout}
-          openLogin={() => setIsLoginModalOpen(true)}
-        />
+        <>
+          {currentView === 'landing' ? (
+            <LandingPage 
+               onLoginClick={() => setIsLoginModalOpen(true)} 
+               onBackToMenu={() => setCurrentView('menu')}
+            />
+          ) : currentView === 'recommendation' && userRole === 'user' ? (
+             <RecommendationPage 
+               onSelectCategory={(cat) => {
+                 setFilterSaran(cat);
+                 setCurrentView('menu');
+               }}
+               onSkip={() => setCurrentView('menu')}
+             />
+          // --- 2. TAMBAHKAN LOGIKA HISTORY DISINI ---
+          ) : currentView === 'history' ? (
+             <HistoryView 
+                onBack={() => setCurrentView('menu')} // Tombol kembali ke menu
+             />
+          // ------------------------------------------
+          ) : (
+             /* DEFAULT: MENU PAGE */
+             <MenuPage 
+               userRole={userRole}
+               userName={userData?.name} 
+               onLogout={handleLogout} 
+               onOpenLogin={() => setCurrentView('landing')} 
+               initialFilter={filterSaran}
+               // --- 3. KIRIM FUNGSI BUKA HISTORY KE MENU ---
+               onOpenHistory={() => setCurrentView('history')}
+             />
+          )}
+        </>
       )}
-    </div>
+    </>
   );
 }
 
