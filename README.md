@@ -1,7 +1,7 @@
-WarungKu - Sistem Pemesanan Makanan Online
+## WarungKu - Sistem Pemesanan Makanan Online
 WarungKu adalah aplikasi web berbasis React yang dirancang untuk memudahkan pelanggan memesan makanan dan minuman secara daring. Aplikasi ini memiliki antarmuka yang modern, responsif, dan dilengkapi dengan fitur manajemen untuk admin.
 
-🚀 Fitur Utama
+## 🚀 Fitur Utama
 Landing Page Interaktif: Tampilan beranda yang menarik dengan integrasi latar belakang kustom dan animasi.
 
 Sistem Autentikasi: Fitur Login dan Registrasi untuk pelanggan menggunakan JWT token.
@@ -16,7 +16,7 @@ Panel Admin: Halaman khusus untuk pengelola warung dalam mengatur pesanan dan me
 
 Notifikasi Real-time: Menggunakan react-hot-toast untuk memberikan umpan balik instan saat login, registrasi, atau terjadi kesalahan.
 
-🛠️ Teknologi yang Digunakan
+## 🛠️ Teknologi yang Digunakan
 Frontend: React 19
 
 Build Tool: Vite
@@ -29,7 +29,7 @@ HTTP Client: Fetch API
 
 Notifications: React Hot Toast
 
-📋 Prasyarat
+## 📋 Prasyarat
 Sebelum menjalankan proyek ini, pastikan Anda telah menginstal:
 
 Node.js (versi terbaru sangat disarankan)
