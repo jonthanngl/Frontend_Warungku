@@ -1,16 +1,37 @@
-# React + Vite
+WarungKu - Sistem Pemesanan Makanan Online
+WarungKu adalah aplikasi web berbasis React yang dirancang untuk memudahkan pelanggan memesan makanan dan minuman secara daring. Aplikasi ini memiliki antarmuka yang modern, responsif, dan dilengkapi dengan fitur manajemen untuk admin.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀 Fitur Utama
+Landing Page Interaktif: Tampilan beranda yang menarik dengan integrasi latar belakang kustom dan animasi.
 
-Currently, two official plugins are available:
+Sistem Autentikasi: Fitur Login dan Registrasi untuk pelanggan menggunakan JWT token.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Manajemen Menu: Daftar menu makanan dan minuman yang dinamis, lengkap dengan status ketersediaan.
 
-## React Compiler
+Rekomendasi Cerdas: Halaman khusus rekomendasi untuk membantu pengguna memilih kategori makanan.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Riwayat Pesanan: Pengguna dapat melihat daftar pesanan yang pernah dilakukan.
 
-## Expanding the ESLint configuration
+Panel Admin: Halaman khusus untuk pengelola warung dalam mengatur pesanan dan menu.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Notifikasi Real-time: Menggunakan react-hot-toast untuk memberikan umpan balik instan saat login, registrasi, atau terjadi kesalahan.
+
+🛠️ Teknologi yang Digunakan
+Frontend: React 19
+
+Build Tool: Vite
+
+Styling: Tailwind CSS & PostCSS
+
+State Management: React Hooks (useState, useEffect)
+
+HTTP Client: Fetch API
+
+Notifications: React Hot Toast
+
+📋 Prasyarat
+Sebelum menjalankan proyek ini, pastikan Anda telah menginstal:
+
+Node.js (versi terbaru sangat disarankan)
+
+npm (biasanya terinstal bersama Node.js)
